@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -32,7 +34,11 @@ func getUrlParts(pixelbinUrl string) (map[string]interface{}, error) {
 	urlDetails := map[string]interface{}{
 		"protocol": parseUrl.Scheme,
 		"host":     parseUrl.Host,
-		"version":  "v1",
+		"search": map[string]string{
+			"dpr":    parseUrl.Query().Get("dpr"),
+			"f_auto": parseUrl.Query().Get("f_auto"),
+		},
+		"version": "v1",
 	}
 	parts := strings.Split(parseUrl.Path, "/")
 	if ok, _ := regexp.MatchString(VERSION2_REGEX, parts[1]); ok {
@@ -68,14 +74,17 @@ func getPartsFromUrl(url string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+	queryObj, err := processQueryParams(parts)
 	parts["zone"] = nil
 	if val, ok := parts["zoneSlug"]; ok {
 		parts["zone"] = val
 		delete(parts, "zoneSlug")
 	}
 	parts["baseUrl"] = fmt.Sprintf("%s://%s", parts["protocol"], parts["host"])
+	parts["options"] = queryObj
 	delete(parts, "protocol")
 	delete(parts, "host")
+	delete(parts, "search")
 	return parts, nil
 }
 
@@ -273,5 +282,57 @@ func getUrlFromObj(obj map[string]interface{}) (string, error) {
 			urlArr = append(urlArr, val.(string))
 		}
 	}
-	return strings.Join(urlArr, "/"), nil
+	queryArr := []string{}
+	if _, ok := obj["options"]; ok {
+		queryParams := obj["options"].(map[string]interface{})
+		if len(queryParams) > 0 {
+			dpr, _ := queryParams["dpr"]
+			f_auto := queryParams["f_auto"]
+			if dpr != "" {
+				_, err := validateDPR(dpr.(float64))
+				if err != nil {
+					return "", err
+				}
+				queryArr = append(queryArr, "dpr="+fmt.Sprint(dpr.(float64)))
+			}
+			if f_auto != "" {
+				_, err := validateFAuto(f_auto.(bool))
+				if err != nil {
+					return "", err
+				}
+				queryArr = append(queryArr, "f_auto="+strconv.FormatBool(f_auto.(bool)))
+			}
+		}
+	}
+	urlStr := strings.Join(urlArr, "/")
+	if len(queryArr) > 0 {
+		urlStr += "?" + strings.Join(queryArr, "&")
+	}
+	return urlStr, nil
+}
+
+func validateDPR(dpr float64) (map[string]interface{}, error) {
+	if reflect.TypeOf(dpr).Kind() != reflect.Float64 || dpr < 0.1 || dpr > 5.0 {
+		return nil, errors.New("DPR value should be numeric and should be between 0.1 to 5.0")
+	}
+	return nil, nil
+}
+
+func validateFAuto(f_auto bool) (map[string]interface{}, error) {
+	if reflect.TypeOf(f_auto).Kind() != reflect.Bool {
+		return nil, errors.New("F_auto value should be boolean")
+	}
+	return nil, nil
+}
+
+func processQueryParams(urlParts map[string]interface{}) (map[string]string, error) {
+	queryParams := urlParts["search"].(map[string]string)
+	queryObj := map[string]string{}
+	if queryParams["dpr"] != "" {
+		queryObj["dpr"] = queryParams["dpr"]
+	}
+	if queryParams["f_auto"] != "" {
+		queryObj["f_auto"] = queryParams["f_auto"]
+	}
+	return queryObj, nil
 }

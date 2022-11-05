@@ -72,6 +72,7 @@ Deconstruct a pixelbin url
 | zone (string)           | 6 character zone slug                  | `z-slug`                   |
 | version (string)        | cdn api version                        | `v2`                       |
 | transformations (array) | Extracted transformations from the url |                            |
+| options (object)        | Optional query params                  |                            |
 | filePath                | Path to the file on Pixelbin storage   | `/path/to/image.jpeg`      |
 | baseUrl (string)        | Base url                               | `https://cdn.pixelbin.io/` |
 
@@ -85,7 +86,7 @@ import (
 )
 
 func main() {
-    pixelbinUrl := "https://cdn.pixelbin.io/v2/your-cloud-name/z-slug/t.resize(h:100,w:200)~t.flip()/path/to/image.jpeg"
+    pixelbinUrl := "https://cdn.pixelbin.io/v2/your-cloud-name/z-slug/t.resize(h:100,w:200)~t.flip()/path/to/image.jpeg?dpr=2.0&f_auto=true"
     obj := url.UrlToObj(pixelbinUrl)
 }
 // obj
@@ -93,6 +94,10 @@ func main() {
 //     "cloudName": "your-cloud-name",
 //     "zone": "z-slug",
 //     "version": "v2",
+//     "options": {
+//         "dpr": "2.0",
+//         "f_auto": "true",
+//     },
 //     "transformations": [
 //         {
 //             "plugin": "t",
@@ -127,6 +132,7 @@ Converts the extracted url obj to a Pixelbin url.
 | cloudName (string)      | The cloudname extracted from the url   | `your-cloud-name`          |
 | zone (string)           | 6 character zone slug                  | `z-slug`                   |
 | version (string)        | cdn api version                        | `v2`                       |
+| options (object)        | Optional query params                  |                            |
 | transformations (array) | Extracted transformations from the url |                            |
 | filePath                | Path to the file on Pixelbin storage   | `/path/to/image.jpeg`      |
 | baseUrl (string)        | Base url                               | `https://cdn.pixelbin.io/` |
@@ -142,6 +148,10 @@ func main() {
         cloudName: "your-cloud-name",
         zone: "z-slug",
         version: "v2",
+        options: {
+            dpr: "2.0",
+            f_auto: "true",
+        },
         transformations: [
             {
                 plugin: "t",
@@ -168,7 +178,7 @@ func main() {
     urlstring := url.ObjToUrl(obj) // obj is as shown above
 }
 // urlstring
-// https://cdn.pixelbin.io/v2/your-cloud-name/z-slug/t.resize(h:100,w:200)~t.flip()/path/to/image.jpeg
+// https://cdn.pixelbin.io/v2/your-cloud-name/z-slug/t.resize(h:100,w:200)~t.flip()/path/to/image.jpeg?dpr=2.0&f_auto=true
 ```
 
 ## Documentation
