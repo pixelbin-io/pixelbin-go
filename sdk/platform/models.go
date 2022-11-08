@@ -185,6 +185,101 @@ type TransformationModuleResponse struct {
 	Enabled     bool                   `json:"enabled"`
 }
 
+// Credentials used by Assets
+type Credentials struct {
+	ID          string                 `json:"_id"`
+	CreatedAt   string                 `json:"createdAt"`
+	UpdatedAt   string                 `json:"updatedAt"`
+	IsActive    bool                   `json:"isActive"`
+	OrgId       string                 `json:"orgId"`
+	PluginId    string                 `json:"pluginId"`
+	Credentials map[string]interface{} `json:"credentials"`
+	Description interface{}            `json:"description"`
+}
+
+// CredentialsItem used by Assets
+type CredentialsItem struct {
+	PluginId interface{} `json:"pluginId"`
+}
+
+// GetCredentialsResponse used by Assets
+type GetCredentialsResponse struct {
+	Credentials interface{} `json:"credentials"`
+}
+
+// AddCredentialsRequest used by Assets
+type AddCredentialsRequest struct {
+	Credentials map[string]interface{} `json:"credentials"`
+	PluginId    string                 `json:"pluginId"`
+}
+
+// UpdateCredentialsRequest used by Assets
+type UpdateCredentialsRequest struct {
+	Credentials map[string]interface{} `json:"credentials"`
+}
+
+// AddCredentialsResponse used by Assets
+type AddCredentialsResponse struct {
+	Credentials map[string]interface{} `json:"credentials"`
+}
+
+// DeleteCredentialsResponse used by Assets
+type DeleteCredentialsResponse struct {
+	ID          string                 `json:"_id"`
+	CreatedAt   string                 `json:"createdAt"`
+	UpdatedAt   string                 `json:"updatedAt"`
+	IsActive    bool                   `json:"isActive"`
+	OrgId       string                 `json:"orgId"`
+	PluginId    string                 `json:"pluginId"`
+	Credentials map[string]interface{} `json:"credentials"`
+}
+
+// GetAncestorsResponse used by Assets
+type GetAncestorsResponse struct {
+	Folder    folderItem        `json:"folder"`
+	Ancestors []FoldersResponse `json:"ancestors"`
+}
+
+// GetFilesWithConstraintsItem used by Assets
+type GetFilesWithConstraintsItem struct {
+	Path string `json:"path"`
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+// GetFilesWithConstraintsRequest used by Assets
+type GetFilesWithConstraintsRequest struct {
+	Items    []GetFilesWithConstraintsItem `json:"items"`
+	MaxCount float64                       `json:"maxCount"`
+	MaxSize  float64                       `json:"maxSize"`
+}
+
+// AddPresetRequest used by Assets
+type AddPresetRequest struct {
+	PresetName     string                 `json:"presetName"`
+	Transformation string                 `json:"transformation"`
+	Params         map[string]interface{} `json:"params"`
+}
+
+// AddPresetResponse used by Assets
+type AddPresetResponse struct {
+	PresetName     string                 `json:"presetName"`
+	Transformation string                 `json:"transformation"`
+	Params         map[string]interface{} `json:"params"`
+	Archived       bool                   `json:"archived"`
+}
+
+// UpdatePresetRequest used by Assets
+type UpdatePresetRequest struct {
+	Archived bool `json:"archived"`
+}
+
+// GetPresetsResponse used by Assets
+type GetPresetsResponse struct {
+	Items []AddPresetResponse `json:"items"`
+	Page  page                `json:"page"`
+}
+
 // OrganizationDetailSchema used by Organization
 type OrganizationDetailSchema struct {
 	ID        float64 `json:"_id"`
@@ -208,8 +303,8 @@ type AppSchema struct {
 	UpdatedAt   string   `json:"updatedAt"`
 }
 
-// AppDetailsByToken used by Organization
-type AppDetailsByToken struct {
+// AppOrgDetails used by Organization
+type AppOrgDetails struct {
 	App AppSchema                `json:"app"`
 	Org OrganizationDetailSchema `json:"org"`
 }

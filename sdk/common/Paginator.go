@@ -1,6 +1,6 @@
 package common
 
-//Paginator holds paginator object
+// Paginator holds paginator object
 type Paginator struct {
 	PageNo      float64
 	HasNextPage bool
@@ -8,7 +8,7 @@ type Paginator struct {
 	Next        func() (interface{}, error)
 }
 
-//NewPaginator returns paginator instance
+// NewPaginator returns paginator instance
 func NewPaginator(pageType string) *Paginator {
 	if pageType == "number" {
 		return &Paginator{
@@ -27,12 +27,12 @@ func NewPaginator(pageType string) *Paginator {
 	return &Paginator{}
 }
 
-//HasNext return has_next value
+// HasNext return has_next value
 func (p *Paginator) HasNext() bool {
 	return p.HasNextPage
 }
 
-//SetPaginator sets paginator instance with either next_id or page_no
+// SetPaginator sets paginator instance with either next_id or page_no
 func (p *Paginator) SetPaginator(hasNext bool, pageNo int, nextID string) {
 	p.HasNextPage = hasNext
 	p.NextID = nextID

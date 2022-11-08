@@ -15,8 +15,20 @@ Asset Uploader Service
 -   [DeleteFile](#deletefile)
 -   [DeleteFiles](#deletefiles)
 -   [CreateFolder](#createfolder)
+-   [GetFolderDetails](#getfolderdetails)
 -   [UpdateFolder](#updatefolder)
 -   [DeleteFolder](#deletefolder)
+-   [GetFolderAncestors](#getfolderancestors)
+-   [AddCredentials](#addcredentials)
+-   [GetCredentials](#getcredentials)
+-   [UpdateCredentials](#updatecredentials)
+-   [DeleteCredentials](#deletecredentials)
+-   [AddPreset](#addpreset)
+-   [GetPresets](#getpresets)
+-   [UpdatePreset](#updatepreset)
+-   [DeletePreset](#deletepreset)
+-   [GetPreset](#getpreset)
+-   [GetDefaultAssetForPlayground](#getdefaultassetforplayground)
 -   [GetModules](#getmodules)
 -   [GetModule](#getmodule)
 
@@ -828,6 +840,83 @@ Success - List of all created folders
 
 </details>
 
+### GetFolderDetails
+
+**Summary**: Get folder details
+
+```golang
+import (
+    "fmt"
+    "os"
+    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+)
+
+func main() {
+    // create pixelbin config object
+    config := platform.NewPixelbinConfig(
+        "API_TOKEN",
+        "https://api.pixelbin.io",
+    )
+    // set oauthclient
+    config.SetOAuthClient()
+
+    // create pixelbin client object
+    pixelbin := platform.NewPixelbinClient(config)
+
+    // Parameters for FileUpload function
+    params := platform.GetFolderDetailsXQuery{
+        Path: "dir1/dir2",
+        Name: "dir",
+    }
+    result, err := pixelbin.Assets.GetFolderDetails(params)
+
+    if err != nil {
+        fmt.Println(err)
+    }
+    // use result
+    fmt.Println(result)
+}
+
+```
+
+| Argument | Type   | Required | Description |
+| -------- | ------ | -------- | ----------- |
+| Path     | string | no       | Folder path |
+| Name     | string | no       | Folder name |
+
+Get folder details
+
+_Returned Response:_
+
+[exploreItem](#exploreitem)
+
+Success
+
+<details>
+<summary><i>&nbsp; Example:</i></summary>
+
+```json
+[
+    {
+        "_id": "dummy-uuid",
+        "createdAt": "2022-10-05T10:43:04.117Z",
+        "updatedAt": "2022-10-05T10:43:04.117Z",
+        "name": "asset2",
+        "type": "file",
+        "path": "dir",
+        "fileId": "dir/asset2",
+        "format": "jpeg",
+        "size": 1000,
+        "access": "private",
+        "metadata": {},
+        "height": 100,
+        "width": 100
+    }
+]
+```
+
+</details>
+
 ### UpdateFolder
 
 **Summary**: Update folder details
@@ -964,6 +1053,799 @@ Success
         "isActive": true
     }
 ]
+```
+
+</details>
+
+### GetFolderAncestors
+
+**Summary**: Get all ancestors of a folder
+
+```golang
+import (
+    "fmt"
+    "os"
+    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+)
+
+func main() {
+    // create pixelbin config object
+    config := platform.NewPixelbinConfig(
+        "API_TOKEN",
+        "https://api.pixelbin.io",
+    )
+    // set oauthclient
+    config.SetOAuthClient()
+
+    // create pixelbin client object
+    pixelbin := platform.NewPixelbinClient(config)
+
+    // Parameters for FileUpload function
+    params := platform.GetFolderAncestorsXQuery{
+        ID: "c9138153-94ea-4dbe-bea9-65d43dba85ae",
+    }
+    result, err := pixelbin.Assets.GetFolderAncestors(params)
+
+    if err != nil {
+        fmt.Println(err)
+    }
+    // use result
+    fmt.Println(result)
+}
+
+```
+
+| Argument | Type   | Required | Description        |
+| -------- | ------ | -------- | ------------------ |
+| ID       | string | yes      | \_id of the folder |
+
+Get all ancestors of a folder, using the folder ID.
+
+_Returned Response:_
+
+[GetAncestorsResponse](#getancestorsresponse)
+
+Success
+
+<details>
+<summary><i>&nbsp; Example:</i></summary>
+
+```json
+{
+    "folder": {
+        "_id": "dummy-uuid",
+        "name": "subDir",
+        "path": "dir1/dir2",
+        "isActive": true
+    },
+    "ancestors": [
+        {
+            "_id": "dummy-uuid-2",
+            "name": "dir1",
+            "path": "",
+            "isActive": true
+        },
+        {
+            "_id": "dummy-uuid-2",
+            "name": "dir2",
+            "path": "dir1",
+            "isActive": true
+        }
+    ]
+}
+```
+
+</details>
+
+### AddCredentials
+
+**Summary**: Add credentials for a transformation module.
+
+```golang
+import (
+    "fmt"
+    "os"
+    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+)
+
+func main() {
+    // create pixelbin config object
+    config := platform.NewPixelbinConfig(
+        "API_TOKEN",
+        "https://api.pixelbin.io",
+    )
+    // set oauthclient
+    config.SetOAuthClient()
+
+    // create pixelbin client object
+    pixelbin := platform.NewPixelbinClient(config)
+
+    // Parameters for FileUpload function
+    params := platform.AddCredentialsXQuery{
+        Credentials: map[string]interface{}{"region":"ap-south-1","accessKeyId":"123456789ABC","secretAccessKey":"DUMMY1234567890"},
+        PluginId: "awsRek",
+    }
+    result, err := pixelbin.Assets.AddCredentials(params)
+
+    if err != nil {
+        fmt.Println(err)
+    }
+    // use result
+    fmt.Println(result)
+}
+
+```
+
+| Argument    | Type                   | Required | Description                                                 |
+| ----------- | ---------------------- | -------- | ----------------------------------------------------------- |
+| Credentials | map[string]interface{} | yes      | Credentials of the plugin                                   |
+| PluginId    | string                 | yes      | Unique identifier for the plugin this credential belongs to |
+
+Add a transformation modules's credentials for an organization.
+
+_Returned Response:_
+
+[AddCredentialsResponse](#addcredentialsresponse)
+
+Success
+
+<details>
+<summary><i>&nbsp; Example:</i></summary>
+
+```json
+{
+    "_id": "123ee789-7ae8-4336-b9bd-e4f33c049002",
+    "createdAt": "2022-10-04T09:52:09.545Z",
+    "updatedAt": "2022-10-04T09:52:09.545Z",
+    "orgId": 23,
+    "pluginId": "awsRek"
+}
+```
+
+</details>
+
+### GetCredentials
+
+**Summary**: Get all credentials for an organization.
+
+```golang
+import (
+    "fmt"
+    "os"
+    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+)
+
+func main() {
+    // create pixelbin config object
+    config := platform.NewPixelbinConfig(
+        "API_TOKEN",
+        "https://api.pixelbin.io",
+    )
+    // set oauthclient
+    config.SetOAuthClient()
+
+    // create pixelbin client object
+    pixelbin := platform.NewPixelbinClient(config)
+
+    // Parameters for FileUpload function
+    params := platform.GetCredentialsXQuery{
+    }
+    result, err := pixelbin.Assets.GetCredentials(params)
+
+    if err != nil {
+        fmt.Println(err)
+    }
+    // use result
+    fmt.Println(result)
+}
+
+```
+
+Get all credentials for an organization.
+
+_Returned Response:_
+
+[GetCredentialsResponse](#getcredentialsresponse)
+
+Success
+
+<details>
+<summary><i>&nbsp; Example:</i></summary>
+
+```json
+{
+    "credentials": {
+        "awsRek": {
+            "_id": "123ee789-7ae8-4336-b9bd-e4f33c049002",
+            "createdAt": "2022-10-04T09:52:09.545Z",
+            "updatedAt": "2022-10-04T09:52:09.545Z",
+            "isActive": true,
+            "orgId": 23,
+            "pluginId": "awsRek",
+            "credentials": {
+                "region": "ap-south-1",
+                "accessKeyId": "123456789ABC",
+                "secretAccessKey": "DUMMY1234567890"
+            }
+        }
+    }
+}
+```
+
+</details>
+
+### UpdateCredentials
+
+**Summary**: Update credentials of a transformation module.
+
+```golang
+import (
+    "fmt"
+    "os"
+    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+)
+
+func main() {
+    // create pixelbin config object
+    config := platform.NewPixelbinConfig(
+        "API_TOKEN",
+        "https://api.pixelbin.io",
+    )
+    // set oauthclient
+    config.SetOAuthClient()
+
+    // create pixelbin client object
+    pixelbin := platform.NewPixelbinClient(config)
+
+    // Parameters for FileUpload function
+    params := platform.UpdateCredentialsXQuery{
+        PluginId: "awsRek",,
+        Credentials: map[string]interface{}{"region":"ap-south-1","accessKeyId":"123456789ABC","secretAccessKey":"DUMMY1234567890"},
+    }
+    result, err := pixelbin.Assets.UpdateCredentials(params)
+
+    if err != nil {
+        fmt.Println(err)
+    }
+    // use result
+    fmt.Println(result)
+}
+
+```
+
+| Argument    | Type                   | Required | Description                                          |
+| ----------- | ---------------------- | -------- | ---------------------------------------------------- |
+| PluginId    | string                 | yes      | ID of the plugin whose credentials are being updated |
+| Credentials | map[string]interface{} | yes      | Credentials of the plugin                            |
+
+Update credentials of a transformation module, for an organization.
+
+_Returned Response:_
+
+[AddCredentialsResponse](#addcredentialsresponse)
+
+Success
+
+<details>
+<summary><i>&nbsp; Example:</i></summary>
+
+```json
+{
+    "_id": "123ee789-7ae8-4336-b9bd-e4f33c049002",
+    "createdAt": "2022-10-04T09:52:09.545Z",
+    "updatedAt": "2022-10-04T09:52:09.545Z",
+    "orgId": 23,
+    "pluginId": "awsRek"
+}
+```
+
+</details>
+
+### DeleteCredentials
+
+**Summary**: Delete credentials of a transformation module.
+
+```golang
+import (
+    "fmt"
+    "os"
+    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+)
+
+func main() {
+    // create pixelbin config object
+    config := platform.NewPixelbinConfig(
+        "API_TOKEN",
+        "https://api.pixelbin.io",
+    )
+    // set oauthclient
+    config.SetOAuthClient()
+
+    // create pixelbin client object
+    pixelbin := platform.NewPixelbinClient(config)
+
+    // Parameters for FileUpload function
+    params := platform.DeleteCredentialsXQuery{
+        PluginId: "awsRek",
+    }
+    result, err := pixelbin.Assets.DeleteCredentials(params)
+
+    if err != nil {
+        fmt.Println(err)
+    }
+    // use result
+    fmt.Println(result)
+}
+
+```
+
+| Argument | Type   | Required | Description                                          |
+| -------- | ------ | -------- | ---------------------------------------------------- |
+| PluginId | string | yes      | ID of the plugin whose credentials are being deleted |
+
+Delete credentials of a transformation module, for an organization.
+
+_Returned Response:_
+
+[AddCredentialsResponse](#addcredentialsresponse)
+
+Success
+
+<details>
+<summary><i>&nbsp; Example:</i></summary>
+
+```json
+{
+    "_id": "123ee789-7ae8-4336-b9bd-e4f33c049002",
+    "createdAt": "2022-10-04T09:52:09.545Z",
+    "updatedAt": "2022-10-04T09:52:09.545Z",
+    "orgId": 23,
+    "pluginId": "awsRek"
+}
+```
+
+</details>
+
+### AddPreset
+
+**Summary**: Add a preset.
+
+```golang
+import (
+    "fmt"
+    "os"
+    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+)
+
+func main() {
+    // create pixelbin config object
+    config := platform.NewPixelbinConfig(
+        "API_TOKEN",
+        "https://api.pixelbin.io",
+    )
+    // set oauthclient
+    config.SetOAuthClient()
+
+    // create pixelbin client object
+    pixelbin := platform.NewPixelbinClient(config)
+
+    // Parameters for FileUpload function
+    params := platform.AddPresetXQuery{
+        PresetName: "p1",
+        Transformation: "t.flip()~t.flop()",
+        Params: map[string]interface{}{"w":{"type":"integer","default":200},"h":{"type":"integer","default":400}},
+    }
+    result, err := pixelbin.Assets.AddPreset(params)
+
+    if err != nil {
+        fmt.Println(err)
+    }
+    // use result
+    fmt.Println(result)
+}
+
+```
+
+| Argument       | Type                   | Required | Description                                    |
+| -------------- | ---------------------- | -------- | ---------------------------------------------- |
+| PresetName     | string                 | yes      | Name of the preset                             |
+| Transformation | string                 | yes      | A chain of transformations, separated by `~`   |
+| Params         | map[string]interface{} | no       | Parameters object for transformation variables |
+
+Add a preset for an organization.
+
+_Returned Response:_
+
+[AddPresetResponse](#addpresetresponse)
+
+Success
+
+<details>
+<summary><i>&nbsp; Example:</i></summary>
+
+```json
+{
+    "presetName": "p1",
+    "transformation": "t.flip()~t.flop()",
+    "params": {
+        "w": {
+            "type": "integer",
+            "default": 200
+        },
+        "h": {
+            "type": "integer",
+            "default": 400
+        }
+    },
+    "archived": false
+}
+```
+
+</details>
+
+### GetPresets
+
+**Summary**: Get all presets.
+
+```golang
+import (
+    "fmt"
+    "os"
+    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+)
+
+func main() {
+    // create pixelbin config object
+    config := platform.NewPixelbinConfig(
+        "API_TOKEN",
+        "https://api.pixelbin.io",
+    )
+    // set oauthclient
+    config.SetOAuthClient()
+
+    // create pixelbin client object
+    pixelbin := platform.NewPixelbinClient(config)
+
+    // Parameters for FileUpload function
+    params := platform.GetPresetsXQuery{
+    }
+    result, err := pixelbin.Assets.GetPresets(params)
+
+    if err != nil {
+        fmt.Println(err)
+    }
+    // use result
+    fmt.Println(result)
+}
+
+```
+
+Get all presets of an organization.
+
+_Returned Response:_
+
+[AddPresetResponse](#addpresetresponse)
+
+Success
+
+<details>
+<summary><i>&nbsp; Example:</i></summary>
+
+```json
+{
+    "items": [
+        {
+            "presetName": "p1",
+            "transformation": "t.flip()~t.flop()",
+            "params": {
+                "w": {
+                    "type": "integer",
+                    "default": 200
+                },
+                "h": {
+                    "type": "integer",
+                    "default": 400
+                }
+            },
+            "archived": true
+        }
+    ],
+    "page": {
+        "type": "number",
+        "size": 1,
+        "current": 1,
+        "hasNext": false
+    }
+}
+```
+
+</details>
+
+### UpdatePreset
+
+**Summary**: Update a preset.
+
+```golang
+import (
+    "fmt"
+    "os"
+    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+)
+
+func main() {
+    // create pixelbin config object
+    config := platform.NewPixelbinConfig(
+        "API_TOKEN",
+        "https://api.pixelbin.io",
+    )
+    // set oauthclient
+    config.SetOAuthClient()
+
+    // create pixelbin client object
+    pixelbin := platform.NewPixelbinClient(config)
+
+    // Parameters for FileUpload function
+    params := platform.UpdatePresetXQuery{
+        PresetName: "p1",,
+        Archived: true,
+    }
+    result, err := pixelbin.Assets.UpdatePreset(params)
+
+    if err != nil {
+        fmt.Println(err)
+    }
+    // use result
+    fmt.Println(result)
+}
+
+```
+
+| Argument   | Type   | Required | Description                               |
+| ---------- | ------ | -------- | ----------------------------------------- |
+| PresetName | string | yes      | Name of the preset to be updated          |
+| Archived   | bool   | yes      | Indicates if the preset has been archived |
+
+Update a preset of an organization.
+
+_Returned Response:_
+
+[AddPresetResponse](#addpresetresponse)
+
+Success
+
+<details>
+<summary><i>&nbsp; Example:</i></summary>
+
+```json
+{
+    "presetName": "p1",
+    "transformation": "t.flip()~t.flop()",
+    "params": {
+        "w": {
+            "type": "integer",
+            "default": 200
+        },
+        "h": {
+            "type": "integer",
+            "default": 400
+        }
+    },
+    "archived": true
+}
+```
+
+</details>
+
+### DeletePreset
+
+**Summary**: Delete a preset.
+
+```golang
+import (
+    "fmt"
+    "os"
+    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+)
+
+func main() {
+    // create pixelbin config object
+    config := platform.NewPixelbinConfig(
+        "API_TOKEN",
+        "https://api.pixelbin.io",
+    )
+    // set oauthclient
+    config.SetOAuthClient()
+
+    // create pixelbin client object
+    pixelbin := platform.NewPixelbinClient(config)
+
+    // Parameters for FileUpload function
+    params := platform.DeletePresetXQuery{
+        PresetName: "p1",
+    }
+    result, err := pixelbin.Assets.DeletePreset(params)
+
+    if err != nil {
+        fmt.Println(err)
+    }
+    // use result
+    fmt.Println(result)
+}
+
+```
+
+| Argument   | Type   | Required | Description                      |
+| ---------- | ------ | -------- | -------------------------------- |
+| PresetName | string | yes      | Name of the preset to be deleted |
+
+Delete a preset of an organization.
+
+_Returned Response:_
+
+[AddPresetResponse](#addpresetresponse)
+
+Success
+
+<details>
+<summary><i>&nbsp; Example:</i></summary>
+
+```json
+{
+    "presetName": "p1",
+    "transformation": "t.flip()~t.flop()",
+    "params": {
+        "w": {
+            "type": "integer",
+            "default": 200
+        },
+        "h": {
+            "type": "integer",
+            "default": 400
+        }
+    },
+    "archived": true
+}
+```
+
+</details>
+
+### GetPreset
+
+**Summary**: Get a preset.
+
+```golang
+import (
+    "fmt"
+    "os"
+    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+)
+
+func main() {
+    // create pixelbin config object
+    config := platform.NewPixelbinConfig(
+        "API_TOKEN",
+        "https://api.pixelbin.io",
+    )
+    // set oauthclient
+    config.SetOAuthClient()
+
+    // create pixelbin client object
+    pixelbin := platform.NewPixelbinClient(config)
+
+    // Parameters for FileUpload function
+    params := platform.GetPresetXQuery{
+        PresetName: "p1",
+    }
+    result, err := pixelbin.Assets.GetPreset(params)
+
+    if err != nil {
+        fmt.Println(err)
+    }
+    // use result
+    fmt.Println(result)
+}
+
+```
+
+| Argument   | Type   | Required | Description                      |
+| ---------- | ------ | -------- | -------------------------------- |
+| PresetName | string | yes      | Name of the preset to be fetched |
+
+Get a preset of an organization.
+
+_Returned Response:_
+
+[AddPresetResponse](#addpresetresponse)
+
+Success
+
+<details>
+<summary><i>&nbsp; Example:</i></summary>
+
+```json
+{
+    "presetName": "p1",
+    "transformation": "t.flip()~t.flop()",
+    "params": {
+        "w": {
+            "type": "integer",
+            "default": 200
+        },
+        "h": {
+            "type": "integer",
+            "default": 400
+        }
+    },
+    "archived": true
+}
+```
+
+</details>
+
+### GetDefaultAssetForPlayground
+
+**Summary**: Get default asset for playground
+
+```golang
+import (
+    "fmt"
+    "os"
+    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+)
+
+func main() {
+    // create pixelbin config object
+    config := platform.NewPixelbinConfig(
+        "API_TOKEN",
+        "https://api.pixelbin.io",
+    )
+    // set oauthclient
+    config.SetOAuthClient()
+
+    // create pixelbin client object
+    pixelbin := platform.NewPixelbinClient(config)
+
+    // Parameters for FileUpload function
+    params := platform.GetDefaultAssetForPlaygroundXQuery{
+    }
+    result, err := pixelbin.Assets.GetDefaultAssetForPlayground(params)
+
+    if err != nil {
+        fmt.Println(err)
+    }
+    // use result
+    fmt.Println(result)
+}
+
+```
+
+Get default asset for playground
+
+_Returned Response:_
+
+[UploadResponse](#uploadresponse)
+
+Success
+
+<details>
+<summary><i>&nbsp; Example:</i></summary>
+
+```json
+{
+    "_id": "dummy-uuid",
+    "name": "asset",
+    "path": "dir",
+    "fileId": "dir/asset",
+    "format": "jpeg",
+    "size": 1000,
+    "access": "private",
+    "isActive": true,
+    "tags": ["tag1", "tag2"],
+    "metadata": {
+        "key": "value"
+    },
+    "url": "https://domain.com/filename.jpeg"
+}
 ```
 
 </details>
@@ -1355,15 +2237,124 @@ Success
 | operations  | []interface{}          | no       | supported operations in the plugin              |
 | enabled     | bool                   | no       | whether the plugin is enabled                   |
 
+#### Credentials
+
+| Properties  | Type                   | Nullable | Description                                                 |
+| ----------- | ---------------------- | -------- | ----------------------------------------------------------- |
+| \_id        | string                 | no       | Unique ID for credential                                    |
+| createdAt   | string                 | no       | Credential creation ISO timestamp                           |
+| updatedAt   | string                 | no       | Credential update ISO timestamp                             |
+| isActive    | bool                   | no       | Tells if credential is active or not                        |
+| orgId       | string                 | no       | ID of the organization this credential belongs to           |
+| pluginId    | string                 | no       | Unique identifier for the plugin this credential belongs to |
+| credentials | map[string]interface{} | no       | Credentials object. It is different for each plugin         |
+| description | interface{}            | no       |                                                             |
+
+#### CredentialsItem
+
+| Properties | Type        | Nullable | Description |
+| ---------- | ----------- | -------- | ----------- |
+| pluginId   | interface{} | no       |             |
+
+#### GetCredentialsResponse
+
+| Properties  | Type        | Nullable | Description |
+| ----------- | ----------- | -------- | ----------- |
+| credentials | interface{} | yes      |             |
+
+#### AddCredentialsRequest
+
+| Properties  | Type                   | Nullable | Description                                                 |
+| ----------- | ---------------------- | -------- | ----------------------------------------------------------- |
+| credentials | map[string]interface{} | yes      | Credentials of the plugin                                   |
+| pluginId    | string                 | yes      | Unique identifier for the plugin this credential belongs to |
+
+#### UpdateCredentialsRequest
+
+| Properties  | Type                   | Nullable | Description               |
+| ----------- | ---------------------- | -------- | ------------------------- |
+| credentials | map[string]interface{} | yes      | Credentials of the plugin |
+
+#### AddCredentialsResponse
+
+| Properties  | Type                   | Nullable | Description |
+| ----------- | ---------------------- | -------- | ----------- |
+| credentials | map[string]interface{} | no       |             |
+
+#### DeleteCredentialsResponse
+
+| Properties  | Type                   | Nullable | Description                                                 |
+| ----------- | ---------------------- | -------- | ----------------------------------------------------------- |
+| \_id        | string                 | no       | Unique Credential ID                                        |
+| createdAt   | string                 | no       | Credential creation ISO timestamp                           |
+| updatedAt   | string                 | no       | Credential update ISO timestamp                             |
+| isActive    | bool                   | no       | Tells if credential is active or not                        |
+| orgId       | string                 | no       | ID of the organization this credential belongs to           |
+| pluginId    | string                 | no       | Unique identifier for the plugin this credential belongs to |
+| credentials | map[string]interface{} | no       | Credentials object. It is different for each plugin         |
+
+#### GetAncestorsResponse
+
+| Properties | Type              | Nullable | Description |
+| ---------- | ----------------- | -------- | ----------- |
+| folder     | folderItem        | no       |             |
+| ancestors  | []FoldersResponse | no       |             |
+
+#### GetFilesWithConstraintsItem
+
+| Properties | Type   | Nullable | Description |
+| ---------- | ------ | -------- | ----------- |
+| path       | string | no       |             |
+| name       | string | no       |             |
+| type       | string | no       |             |
+
+#### GetFilesWithConstraintsRequest
+
+| Properties | Type                          | Nullable | Description |
+| ---------- | ----------------------------- | -------- | ----------- |
+| items      | []GetFilesWithConstraintsItem | no       |             |
+| maxCount   | float64                       | no       |             |
+| maxSize    | float64                       | no       |             |
+
+#### AddPresetRequest
+
+| Properties     | Type                   | Nullable | Description                                    |
+| -------------- | ---------------------- | -------- | ---------------------------------------------- |
+| presetName     | string                 | yes      | Name of the preset                             |
+| transformation | string                 | yes      | A chain of transformations, separated by `~`   |
+| params         | map[string]interface{} | no       | Parameters object for transformation variables |
+
+#### AddPresetResponse
+
+| Properties     | Type                   | Nullable | Description                                    |
+| -------------- | ---------------------- | -------- | ---------------------------------------------- |
+| presetName     | string                 | yes      | Name of the preset                             |
+| transformation | string                 | yes      | A chain of transformations, separated by `~`   |
+| params         | map[string]interface{} | no       | Parameters object for transformation variables |
+| archived       | bool                   | no       | Indicates if the preset has been archived      |
+
+#### UpdatePresetRequest
+
+| Properties | Type | Nullable | Description                               |
+| ---------- | ---- | -------- | ----------------------------------------- |
+| archived   | bool | yes      | Indicates if the preset has been archived |
+
+#### GetPresetsResponse
+
+| Properties | Type                | Nullable | Description             |
+| ---------- | ------------------- | -------- | ----------------------- |
+| items      | []AddPresetResponse | yes      | Presets in current page |
+| page       | page                | yes      | page details            |
+
 ### Enums
 
 #### [AccessEnum](#AccessEnum)
 
 Type : string
 
-| Name        | Value       | Description                                |
-| ----------- | ----------- | ------------------------------------------ |
-| public-read | public-read | Object is available for public read access |
-| private     | private     | Object is private                          |
+| Name        | Value       | Description |
+| ----------- | ----------- | ----------- |
+| public-read | public-read | public-read |
+| private     | private     | private     |
 
 ---

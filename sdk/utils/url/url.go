@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"reflect"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -102,13 +103,13 @@ func getParamsList(dSplit string, prefix string) []string {
 	return strings.Split(removeLeadingDash(s2), ",")
 }
 
-func getParamsObject(paramsList []string) []map[string]string {
-	params := []map[string]string{}
+func getParamsObject(paramsList []string) map[string]string {
+	params := make(map[string]string)
 	for _, v := range paramsList {
 		if strings.Contains(v, ":") {
 			it := strings.Split(v, ":")
 			if it[0] != "" {
-				params = append(params, map[string]string{"key": it[0], "value": it[1]})
+				params[it[0]] = it[1]
 			}
 		}
 	}
@@ -118,28 +119,32 @@ func getParamsObject(paramsList []string) []map[string]string {
 	return nil
 }
 
-func txtToOptions(dSplit string) map[string]interface{} {
+// previously txtToOptions
+func getOperationDetailsFromOperation(dSplit string) map[string]interface{} {
 	// Figure Out Module
 	fullFnName := strings.Split(dSplit, "(")[0]
 
-	arr := strings.Split(fullFnName, ".")
-	pluginId := arr[0]
-	operationName := arr[1]
-
-	if pluginId == "p" {
-		params := getParamsObject(getParamsList(dSplit, ""))
-		for _, v := range params {
-			if v["key"] == "n" {
-				return map[string]interface{}{
-					"plugin": pluginId,
-					"name":   v["key"],
-				}
-			}
-		}
-		return nil
+	var pluginId string
+	var operationName string
+	if strings.HasPrefix(dSplit, "p:") {
+		arr := strings.Split(fullFnName, ":")
+		pluginId = arr[0]
+		operationName = arr[1]
+	} else {
+		arr := strings.Split(fullFnName, ".")
+		pluginId = arr[0]
+		operationName = arr[1]
 	}
 
-	values := getParamsObject(getParamsList(dSplit, "."))
+	values := make(map[string]string)
+	if pluginId == "p" {
+		if strings.Contains(dSplit, "(") {
+			values = getParamsObject(getParamsList(dSplit, ""))
+		}
+	} else {
+		values = getParamsObject(getParamsList(dSplit, ""))
+	}
+
 	transformation := map[string]interface{}{
 		"plugin": pluginId,
 		"name":   operationName,
@@ -168,18 +173,48 @@ func FlattenSlice(slice []interface{}) []string {
 	return flat
 }
 
-func getTransformationsFromPattern(pattern string, url string) []map[string]interface{} {
+func getTransformationDetailsFromPattern(pattern string, url string) []map[string]interface{} {
 	if pattern == "original" {
 		return []map[string]interface{}{}
 	}
 	dSplit := strings.Split(pattern, OPERTATION_SEPARATOR)
 	arr := make([]map[string]interface{}, len(dSplit))
 	for i, v := range dSplit {
-		if strings.HasPrefix(v, "p:") {
-			a := strings.Split(v, ":")
-			v = fmt.Sprintf("p.apply(n:%s)", a[1])
+		// if strings.HasPrefix(v, "p:") {
+		// 	a := strings.Split(v, ":")
+		// 	v = fmt.Sprintf("p.apply(n:%s)", a[1])
+		// }
+		result := getOperationDetailsFromOperation(v)
+		name := result["name"]
+		plugin := result["plugin"]
+		var values map[string]string
+		if result["values"] != nil && len(result["values"].(map[string]string)) > 0 {
+			values = result["values"].(map[string]string)
 		}
-		arr[i] = txtToOptions(v)
+
+		if len(values) > 0 {
+			keys := make([]string, 0)
+			for k, _ := range values {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+
+			valuesList := []map[string]string{}
+			for _, k := range keys {
+				valuesList = append(valuesList, map[string]string{"key": k, "value": values[k]})
+			}
+
+			arr[i] = map[string]interface{}{
+				"name":   name,
+				"plugin": plugin,
+				"values": valuesList,
+			}
+		} else {
+			arr[i] = map[string]interface{}{
+				"name":   name,
+				"plugin": plugin,
+			}
+		}
 	}
 
 	// opts := FlattenSlice(arr)
@@ -192,7 +227,7 @@ func getObjFromUrl(url string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, errors.New("error Processing url. Please check the url is correct" + err.Error())
 	}
-	transformations := getTransformationsFromPattern(
+	transformations := getTransformationDetailsFromPattern(
 		parts["pattern"].(string),
 		url,
 	)
@@ -208,23 +243,27 @@ func getPatternFromTransformations(tflist interface{}) (string, error) {
 	newtransformationList := []string{}
 	for _, o := range transformationList {
 		if _, ok := o["name"]; ok {
+			if _, ok := o["values"]; !ok {
+				o["values"] = []map[string]interface{}{}
+			}
+			paramlist := []string{}
+			for _, items := range o["values"].([]map[string]interface{}) {
+				if _, ok := items["key"]; !ok {
+					return "", errors.New("key not specified")
+				}
+				if _, ok := items["value"]; !ok {
+					return "", errors.New("value not specified for" + items["key"].(string))
+				}
+				paramlist = append(paramlist, fmt.Sprintf("%s:%s", items["key"], items["value"]))
+			}
+			paramstr := strings.Join(paramlist, PARAMETER_SEPARATOR)
 			if o["plugin"] == "p" {
-				newtransformationList = append(newtransformationList, fmt.Sprintf("p:%s", o["plugin"]))
+				if len(paramstr) > 0 {
+					newtransformationList = append(newtransformationList, fmt.Sprintf("%s:%s(%s)", o["plugin"], o["name"], paramstr))
+				} else {
+					newtransformationList = append(newtransformationList, fmt.Sprintf("%s:%s", o["plugin"], o["name"]))
+				}
 			} else {
-				if _, ok := o["values"]; !ok {
-					o["values"] = []map[string]interface{}{}
-				}
-				paramlist := []string{}
-				for _, items := range o["values"].([]map[string]interface{}) {
-					if _, ok := items["key"]; !ok {
-						return "", errors.New("key not specified")
-					}
-					if _, ok := items["value"]; !ok {
-						return "", errors.New("value not specified for" + items["key"].(string))
-					}
-					paramlist = append(paramlist, fmt.Sprintf("%s:%s", items["key"], items["value"]))
-				}
-				paramstr := strings.Join(paramlist, PARAMETER_SEPARATOR)
 				newtransformationList = append(newtransformationList, fmt.Sprintf("%s.%s(%s)", o["plugin"], o["name"], paramstr))
 			}
 		}
