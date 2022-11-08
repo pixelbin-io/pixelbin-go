@@ -1,12 +1,12 @@
 package platform
 
-//OAuthClient holds OAuth Client details
+// OAuthClient holds OAuth Client details
 type OAuthClient struct {
 	Config *PixelbinConfig
 	Token  string
 }
 
-//NewOAuthClient return OAuthClient instance
+// NewOAuthClient return OAuthClient instance
 func NewOAuthClient(config *PixelbinConfig) *OAuthClient {
 	return &OAuthClient{
 		Config: config,
@@ -14,7 +14,7 @@ func NewOAuthClient(config *PixelbinConfig) *OAuthClient {
 	}
 }
 
-//GetAccessToken returns the access token
+// GetAccessToken returns the access token
 func (o *OAuthClient) GetAccessToken() string {
 	return o.Token
 }

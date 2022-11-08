@@ -21,12 +21,12 @@ import (
 	"time"
 )
 
-//EncodeToBase64 gives base64 encoded string
+// EncodeToBase64 gives base64 encoded string
 func EncodeToBase64(val string) string {
 	return base64.StdEncoding.EncodeToString([]byte(val))
 }
 
-//MapToURLEncodedString converts map to url encoded string
+// MapToURLEncodedString converts map to url encoded string
 func MapToURLEncodedString(valMap map[string]string) (encodedData string) {
 	data := url.Values{}
 	for k, v := range valMap {
@@ -50,7 +50,7 @@ func NewSignatureModel(domain string, method string, url string, queryString str
 	return &SignatureModel{domain, method, url, queryString, headers, body, excludeHeaders}
 }
 
-//GetRequestedDateTime reuse and returns the date time created
+// GetRequestedDateTime reuse and returns the date time created
 func GetRequestedDateTime() string {
 	return strings.Replace(strings.Replace(time.Now().UTC().Format(time.RFC3339), "-", "", -1), ":", "", -1)
 }

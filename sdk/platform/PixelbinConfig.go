@@ -7,18 +7,18 @@ type PixelbinConfig struct {
 	OAuthClient *OAuthClient
 }
 
-//NewPixelbinConfig provides pixelbin configuration
+// NewPixelbinConfig provides pixelbin configuration
 func NewPixelbinConfig(apiSecret, domain string) *PixelbinConfig {
 	return &PixelbinConfig{apiSecret, domain, &OAuthClient{}}
 }
 
-//SetOAuthClient sets OAuthClient into pixelbin configuration
+// SetOAuthClient sets OAuthClient into pixelbin configuration
 func (p *PixelbinConfig) SetOAuthClient() {
 	p.OAuthClient = NewOAuthClient(p)
 
 }
 
-//GetAccessToken returns the access token
+// GetAccessToken returns the access token
 func (p *PixelbinConfig) GetAccessToken() string {
 	return p.OAuthClient.GetAccessToken()
 }

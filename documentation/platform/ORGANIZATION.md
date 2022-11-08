@@ -4,11 +4,11 @@
 
 Organization Service
 
--   [GetAppByToken](#getappbytoken)
+-   [GetAppOrgDetails](#getapporgdetails)
 
 ## Methods with example and description
 
-### GetAppByToken
+### GetAppOrgDetails
 
 **Summary**: Get App Details
 
@@ -32,10 +32,9 @@ func main() {
     pixelbin := platform.NewPixelbinClient(config)
 
     // Parameters for FileUpload function
-    params := platform.GetAppByTokenXQuery{
-        Token: "<API-TOKEN>",
+    params := platform.GetAppOrgDetailsXQuery{
     }
-    result, err := pixelbin.Organization.GetAppByToken(params)
+    result, err := pixelbin.Organization.GetAppOrgDetails(params)
 
     if err != nil {
         fmt.Println(err)
@@ -46,17 +45,13 @@ func main() {
 
 ```
 
-| Argument | Type   | Required | Description        |
-| -------- | ------ | -------- | ------------------ |
-| Token    | string | yes      | Pixelbin api token |
-
-Get App and org details with the API_TOKEN
+Get App and org details
 
 _Returned Response:_
 
-[AppDetailsByToken](#appdetailsbytoken)
+[AppOrgDetails](#apporgdetails)
 
-Success. Returns a JSON object as shown below. Refer `AppDetailsByToken` for more details.
+Success. Returns a JSON object as shown below. Refer `AppOrgDetails` for more details.
 
 <details>
 <summary><i>&nbsp; Example:</i></summary>
@@ -113,7 +108,7 @@ Success. Returns a JSON object as shown below. Refer `AppDetailsByToken` for mor
 | createdAt   | string   | no       | Timestamp when the app was created      |
 | updatedAt   | string   | no       | Timestamp when the app was last updated |
 
-#### AppDetailsByToken
+#### AppOrgDetails
 
 | Properties | Type                     | Nullable | Description |
 | ---------- | ------------------------ | -------- | ----------- |

@@ -214,7 +214,6 @@ summary: S3 Signed URL upload
 description: For the given asset details, a S3 signed URL will be generated,
 which can be then used to upload your asset.
 
-
 params: CreateSignedUrlXQuery
 */
 func (c *Assets) CreateSignedUrl(
@@ -297,7 +296,6 @@ type ListFilesXQuery struct {
 summary: List and search files and folders.
 
 description: List all files and folders in root folder. Search for files if name is provided. If path is provided, search in the specified path.
-
 
 params: ListFilesXQuery
 */
@@ -612,7 +610,6 @@ summary: Create folder
 
 description: Create a new folder at the specified path. Also creates the ancestors if they do not exist.
 
-
 params: CreateFolderXQuery
 */
 func (c *Assets) CreateFolder(
@@ -655,6 +652,54 @@ func (c *Assets) CreateFolder(
 
 }
 
+type GetFolderDetailsXQuery struct {
+	Path string `json:"path,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
+/*
+summary: Get folder details
+
+description: Get folder details
+
+params: GetFolderDetailsXQuery
+*/
+func (c *Assets) GetFolderDetails(
+	p GetFolderDetailsXQuery,
+) (map[string]interface{}, error) {
+
+	queryParams := make(map[string]string)
+
+	if p.Path != "" {
+		queryParams["path"] = fmt.Sprintf("%v", p.Path)
+	}
+
+	if p.Name != "" {
+		queryParams["name"] = fmt.Sprintf("%v", p.Name)
+	}
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "get",
+		Url:         "/service/platform/assets/v1.0/folders",
+		Query:       queryParams,
+		Body:        nil,
+		ContentType: "",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
 type UpdateFolderXQuery struct {
 	FolderId string `json:"folderId,omitempty"`
 	IsActive bool   `json:"isActive,omitempty"`
@@ -666,7 +711,6 @@ summary: Update folder details
 description: Update folder details. Eg: Soft delete it
 by making `isActive` as `false`.
 We currently do not support updating folder name or path.
-
 
 params: UpdateFolderXQuery
 */
@@ -715,7 +759,6 @@ summary: Delete folder
 
 description: Delete folder and all its children permanently.
 
-
 params: DeleteFolderXQuery
 */
 func (c *Assets) DeleteFolder(
@@ -746,6 +789,481 @@ func (c *Assets) DeleteFolder(
 
 }
 
+type GetFolderAncestorsXQuery struct {
+	ID string `json:"_id,omitempty"`
+}
+
+/*
+summary: Get all ancestors of a folder
+
+description: Get all ancestors of a folder, using the folder ID.
+
+params: GetFolderAncestorsXQuery
+*/
+func (c *Assets) GetFolderAncestors(
+	p GetFolderAncestorsXQuery,
+) (map[string]interface{}, error) {
+
+	queryParams := make(map[string]string)
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "get",
+		Url:         fmt.Sprintf("/service/platform/assets/v1.0/folders/%s/ancestors", p.ID),
+		Query:       queryParams,
+		Body:        nil,
+		ContentType: "",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
+type AddCredentialsXQuery struct {
+	Credentials map[string]interface{} `json:"credentials,omitempty"`
+	PluginId    string                 `json:"pluginId,omitempty"`
+}
+
+/*
+summary: Add credentials for a transformation module.
+
+description: Add a transformation modules's credentials for an organization.
+
+params: AddCredentialsXQuery
+*/
+func (c *Assets) AddCredentials(
+	p AddCredentialsXQuery,
+) (map[string]interface{}, error) {
+
+	type body struct {
+		Credentials map[string]interface{} `json:"credentials,omitempty"`
+
+		PluginId string `json:"pluginId,omitempty"`
+	}
+	bodydata := &body{
+
+		Credentials: p.Credentials,
+
+		PluginId: p.PluginId,
+	}
+
+	queryParams := make(map[string]string)
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "post",
+		Url:         "/service/platform/assets/v1.0/credentials",
+		Query:       queryParams,
+		Body:        bodydata,
+		ContentType: "application/json",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
+type GetCredentialsXQuery struct {
+}
+
+/*
+summary: Get all credentials for an organization.
+
+description: Get all credentials for an organization.
+
+params: GetCredentialsXQuery
+*/
+func (c *Assets) GetCredentials(
+	p GetCredentialsXQuery,
+) (map[string]interface{}, error) {
+
+	queryParams := make(map[string]string)
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "get",
+		Url:         "/service/platform/assets/v1.0/credentials",
+		Query:       queryParams,
+		Body:        nil,
+		ContentType: "",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
+type UpdateCredentialsXQuery struct {
+	PluginId    string                 `json:"pluginId,omitempty"`
+	Credentials map[string]interface{} `json:"credentials,omitempty"`
+}
+
+/*
+summary: Update credentials of a transformation module.
+
+description: Update credentials of a transformation module, for an organization.
+
+params: UpdateCredentialsXQuery
+*/
+func (c *Assets) UpdateCredentials(
+	p UpdateCredentialsXQuery,
+) (map[string]interface{}, error) {
+
+	type body struct {
+		Credentials map[string]interface{} `json:"credentials,omitempty"`
+	}
+	bodydata := &body{
+
+		Credentials: p.Credentials,
+	}
+
+	queryParams := make(map[string]string)
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "patch",
+		Url:         fmt.Sprintf("/service/platform/assets/v1.0/credentials/%s", p.PluginId),
+		Query:       queryParams,
+		Body:        bodydata,
+		ContentType: "application/json",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
+type DeleteCredentialsXQuery struct {
+	PluginId string `json:"pluginId,omitempty"`
+}
+
+/*
+summary: Delete credentials of a transformation module.
+
+description: Delete credentials of a transformation module, for an organization.
+
+params: DeleteCredentialsXQuery
+*/
+func (c *Assets) DeleteCredentials(
+	p DeleteCredentialsXQuery,
+) (map[string]interface{}, error) {
+
+	queryParams := make(map[string]string)
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "delete",
+		Url:         fmt.Sprintf("/service/platform/assets/v1.0/credentials/%s", p.PluginId),
+		Query:       queryParams,
+		Body:        nil,
+		ContentType: "",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
+type AddPresetXQuery struct {
+	PresetName     string                 `json:"presetName,omitempty"`
+	Transformation string                 `json:"transformation,omitempty"`
+	Params         map[string]interface{} `json:"params,omitempty"`
+}
+
+/*
+summary: Add a preset.
+
+description: Add a preset for an organization.
+
+params: AddPresetXQuery
+*/
+func (c *Assets) AddPreset(
+	p AddPresetXQuery,
+) (map[string]interface{}, error) {
+
+	type body struct {
+		PresetName string `json:"presetName,omitempty"`
+
+		Transformation string `json:"transformation,omitempty"`
+
+		Params map[string]interface{} `json:"params,omitempty"`
+	}
+	bodydata := &body{
+
+		PresetName: p.PresetName,
+
+		Transformation: p.Transformation,
+
+		Params: p.Params,
+	}
+
+	queryParams := make(map[string]string)
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "post",
+		Url:         "/service/platform/assets/v1.0/presets",
+		Query:       queryParams,
+		Body:        bodydata,
+		ContentType: "application/json",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
+type GetPresetsXQuery struct {
+}
+
+/*
+summary: Get all presets.
+
+description: Get all presets of an organization.
+
+params: GetPresetsXQuery
+*/
+func (c *Assets) GetPresets(
+	p GetPresetsXQuery,
+) (map[string]interface{}, error) {
+
+	queryParams := make(map[string]string)
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "get",
+		Url:         "/service/platform/assets/v1.0/presets",
+		Query:       queryParams,
+		Body:        nil,
+		ContentType: "",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
+type UpdatePresetXQuery struct {
+	PresetName string `json:"presetName,omitempty"`
+	Archived   bool   `json:"archived,omitempty"`
+}
+
+/*
+summary: Update a preset.
+
+description: Update a preset of an organization.
+
+params: UpdatePresetXQuery
+*/
+func (c *Assets) UpdatePreset(
+	p UpdatePresetXQuery,
+) (map[string]interface{}, error) {
+
+	type body struct {
+		Archived bool `json:"archived,omitempty"`
+	}
+	bodydata := &body{
+
+		Archived: p.Archived,
+	}
+
+	queryParams := make(map[string]string)
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "patch",
+		Url:         fmt.Sprintf("/service/platform/assets/v1.0/presets/%s", p.PresetName),
+		Query:       queryParams,
+		Body:        bodydata,
+		ContentType: "application/json",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
+type DeletePresetXQuery struct {
+	PresetName string `json:"presetName,omitempty"`
+}
+
+/*
+summary: Delete a preset.
+
+description: Delete a preset of an organization.
+
+params: DeletePresetXQuery
+*/
+func (c *Assets) DeletePreset(
+	p DeletePresetXQuery,
+) (map[string]interface{}, error) {
+
+	queryParams := make(map[string]string)
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "delete",
+		Url:         fmt.Sprintf("/service/platform/assets/v1.0/presets/%s", p.PresetName),
+		Query:       queryParams,
+		Body:        nil,
+		ContentType: "",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
+type GetPresetXQuery struct {
+	PresetName string `json:"presetName,omitempty"`
+}
+
+/*
+summary: Get a preset.
+
+description: Get a preset of an organization.
+
+params: GetPresetXQuery
+*/
+func (c *Assets) GetPreset(
+	p GetPresetXQuery,
+) (map[string]interface{}, error) {
+
+	queryParams := make(map[string]string)
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "get",
+		Url:         fmt.Sprintf("/service/platform/assets/v1.0/presets/%s", p.PresetName),
+		Query:       queryParams,
+		Body:        nil,
+		ContentType: "",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
+type GetDefaultAssetForPlaygroundXQuery struct {
+}
+
+/*
+summary: Get default asset for playground
+
+description: Get default asset for playground
+
+params: GetDefaultAssetForPlaygroundXQuery
+*/
+func (c *Assets) GetDefaultAssetForPlayground(
+	p GetDefaultAssetForPlaygroundXQuery,
+) (map[string]interface{}, error) {
+
+	queryParams := make(map[string]string)
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "get",
+		Url:         "/service/platform/assets/v1.0/playground/default",
+		Query:       queryParams,
+		Body:        nil,
+		ContentType: "",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
 type GetModulesXQuery struct {
 }
 
@@ -753,7 +1271,6 @@ type GetModulesXQuery struct {
 summary: Get all transformation modules
 
 description: Get all transformation modules.
-
 
 params: GetModulesXQuery
 */
@@ -793,7 +1310,6 @@ type GetModuleXQuery struct {
 summary: Get Transformation Module by module identifier
 
 description: Get Transformation Module by module identifier
-
 
 params: GetModuleXQuery
 */
@@ -835,19 +1351,18 @@ func NewOrganization(config *PixelbinConfig) *Organization {
 	return &Organization{config: config}
 }
 
-type GetAppByTokenXQuery struct {
-	Token string `json:"token,omitempty"`
+type GetAppOrgDetailsXQuery struct {
 }
 
 /*
 summary: Get App Details
 
-description: Get App and org details with the API_TOKEN
+description: Get App and org details
 
-params: GetAppByTokenXQuery
+params: GetAppOrgDetailsXQuery
 */
-func (c *Organization) GetAppByToken(
-	p GetAppByTokenXQuery,
+func (c *Organization) GetAppOrgDetails(
+	p GetAppOrgDetailsXQuery,
 ) (map[string]interface{}, error) {
 
 	queryParams := make(map[string]string)
@@ -855,7 +1370,7 @@ func (c *Organization) GetAppByToken(
 	apiClient := &APIClient{
 		Conf:        c.config,
 		Method:      "get",
-		Url:         fmt.Sprintf("/service/platform/organization/v1.0/apps/%s", p.Token),
+		Url:         "/service/platform/organization/v1.0/apps/info",
 		Query:       queryParams,
 		Body:        nil,
 		ContentType: "",

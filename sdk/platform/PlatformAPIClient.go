@@ -7,7 +7,7 @@ import (
 	"github.com/pixelbin-dev/pixelbin-go/sdk/common"
 )
 
-//APIClient holds raw data for api execution
+// APIClient holds raw data for api execution
 type APIClient struct {
 	Conf        *PixelbinConfig
 	Method      string
@@ -17,7 +17,7 @@ type APIClient struct {
 	ContentType string
 }
 
-//Execute performs API call
+// Execute performs API call
 func (c *APIClient) Execute() ([]byte, error) {
 	var token string = common.EncodeToBase64(c.Conf.GetAccessToken())
 	headers := map[string]string{
