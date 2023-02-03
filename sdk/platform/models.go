@@ -202,11 +202,6 @@ type CredentialsItem struct {
 	PluginId interface{} `json:"pluginId"`
 }
 
-// GetCredentialsResponse used by Assets
-type GetCredentialsResponse struct {
-	Credentials interface{} `json:"credentials"`
-}
-
 // AddCredentialsRequest used by Assets
 type AddCredentialsRequest struct {
 	Credentials map[string]interface{} `json:"credentials"`

@@ -36,6 +36,45 @@ func TestCreateFolder(t *testing.T) {
 	}
 }
 
+func TestGetFolderDetails(t *testing.T) {
+	params := platform.GetFolderDetailsXQuery{
+		Path: "",
+		Name: settings["folderName"],
+	}
+
+	_, err := pixelbin.Assets.GetFolderDetails(params)
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	} else {
+		t.Logf("Success")
+	}
+}
+
+func TestGetFolderAncestors(t *testing.T) {
+	params := platform.CreateFolderXQuery{Name: "folder", Path: "nested"}
+	resp, err := pixelbin.Assets.CreateFolder(params)
+	jsonBody, err := json.Marshal(resp)
+	if err != nil {
+		t.Errorf("Failed ! error in marshalling %v", err)
+	}
+	var x platform.FoldersResponse
+	err = json.Unmarshal(jsonBody, &x)
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	}
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	} else {
+		reqParams := platform.GetFolderAncestorsXQuery{ID: x.ID}
+		_, err := pixelbin.Assets.GetFolderAncestors(reqParams)
+		if err != nil {
+			t.Errorf("Failed ! got err %v", err)
+		} else {
+			t.Logf("Success")
+		}
+	}
+}
+
 func TestFileUploadCase1(t *testing.T) {
 	file, _ := os.Open("1.jpeg")
 	params := platform.FileUploadXQuery{File: file}
@@ -48,20 +87,74 @@ func TestFileUploadCase1(t *testing.T) {
 }
 
 func TestFileUploadCase2(t *testing.T) {
+	tags := []string{"tag1", "tag2"}
 	file, _ := os.Open("1.jpeg")
 	params := platform.FileUploadXQuery{
 		File:             file,
 		Path:             settings["folderName"],
 		Name:             "1",
 		Access:           "public-read",
-		Tags:             []string{"tag1", "tag2"},
+		Tags:             tags,
 		Metadata:         map[string]interface{}{},
 		Overwrite:        false,
 		FilenameOverride: true,
 	}
+	res, err := pixelbin.Assets.FileUpload(params)
+
+	jsonbody, err := json.Marshal(res)
+	if err != nil {
+		t.Errorf("Failed ! error in marshalling %v", err)
+	}
+	var x platform.UploadResponse
+	err = json.Unmarshal(jsonbody, &x)
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	}
+
+	for i, tag := range tags {
+		// println("tag  ", tag, " exp ", tags[i])
+		if tag != x.Tags[i] {
+			t.Errorf("Failed ! expected %v got err %v", tag, x.Tags[i])
+		}
+	}
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	} else {
+		t.Logf("Success")
+	}
+}
+
+func TestFileUploadCaseOverwrite(t *testing.T) {
+	file, _ := os.Open("1.jpeg")
+	params := platform.FileUploadXQuery{
+		File:             file,
+		Name:             "test",
+		Access:           "public-read",
+		Tags:             []string{"tag1", "tag2"},
+		Metadata:         map[string]interface{}{},
+		Overwrite:        true,
+		FilenameOverride: false,
+	}
 	_, err := pixelbin.Assets.FileUpload(params)
 	if err != nil {
 		t.Errorf("Failed ! got err %v", err)
+	} else {
+		t.Logf("Success")
+	}
+
+	file2, _ := os.Open("1.jpeg")
+	params2 := platform.FileUploadXQuery{
+		File:             file2,
+		Name:             "test",
+		Access:           "public-read",
+		Tags:             []string{"tag1", "tag2"},
+		Metadata:         map[string]interface{}{},
+		Overwrite:        true,
+		FilenameOverride: false,
+	}
+	_, err2 := pixelbin.Assets.FileUpload(params2)
+	if err2 != nil {
+		t.Errorf("Failed ! got err2 %v", err2)
 	} else {
 		t.Logf("Success")
 	}
@@ -88,17 +181,36 @@ func TestListFilesCase2(t *testing.T) {
 }
 
 func TestUrlUpload(t *testing.T) {
+	tags := []string{"cat", "animal"}
+
 	params := platform.UrlUploadXQuery{
 		URL:              "https://www.fetchfind.com/blog/wp-content/uploads/2017/08/cat-2734999_1920-5-common-cat-sounds.jpg",
 		Path:             settings["folderName"],
 		Name:             "2",
 		Access:           "public-read",
-		Tags:             []string{"cat", "animal"},
+		Tags:             tags,
 		Metadata:         map[string]interface{}{},
 		Overwrite:        false,
 		FilenameOverride: true,
 	}
-	_, err := pixelbin.Assets.UrlUpload(params)
+	res, err := pixelbin.Assets.UrlUpload(params)
+
+	jsonbody, err := json.Marshal(res)
+	if err != nil {
+		t.Errorf("Failed ! error in marshalling %v", err)
+	}
+	var x platform.UploadResponse
+	err = json.Unmarshal(jsonbody, &x)
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	}
+
+	for i, tag := range tags {
+		// println("tag  ", tag, " exp ", tags[i])
+		if tag != x.Tags[i] {
+			t.Errorf("Failed ! expected %v got err %v", tag, x.Tags[i])
+		}
+	}
 	if err != nil {
 		t.Errorf("Failed ! got err %v", err)
 	} else {
@@ -255,6 +367,120 @@ func TestGetModule(t *testing.T) {
 		Identifier: "t",
 	}
 	_, err := pixelbin.Assets.GetModule(params)
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	} else {
+		t.Logf("Success")
+	}
+}
+
+func TestAddCredentials(t *testing.T) {
+	params := platform.AddCredentialsXQuery{
+		Credentials: map[string]interface{}{"apiKey": "dummy_key_replace_with_real"},
+		PluginId:    "remove",
+	}
+	_, err := pixelbin.Assets.AddCredentials(params)
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	} else {
+		t.Logf("Success")
+	}
+}
+
+func TestUpdateCredentials(t *testing.T) {
+	params := platform.UpdateCredentialsXQuery{
+		PluginId:    "remove",
+		Credentials: map[string]interface{}{"apiKey": "dummy_key_replace_with_real"},
+	}
+	_, err := pixelbin.Assets.UpdateCredentials(params)
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	} else {
+		t.Logf("Success")
+	}
+}
+
+func TestDeleteCredentials(t *testing.T) {
+	params := platform.DeleteCredentialsXQuery{
+		PluginId: "remove",
+	}
+	_, err := pixelbin.Assets.DeleteCredentials(params)
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	} else {
+		t.Logf("Success")
+	}
+}
+
+func TestAddPreset(t *testing.T) {
+	params := platform.AddPresetXQuery{
+		PresetName:     "p1",
+		Transformation: "t.flip()~t.flop()",
+		Params: map[string]interface{}{
+			"w": map[string]interface{}{"type": "integer", "default": 200},
+			"h": map[string]interface{}{"type": "integer", "default": 400},
+		},
+	}
+	_, err := pixelbin.Assets.AddPreset(params)
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	} else {
+		t.Logf("Success")
+	}
+}
+
+func TestGetPresets(t *testing.T) {
+	params := platform.GetPresetsXQuery{}
+	_, err := pixelbin.Assets.GetPresets(params)
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	} else {
+		t.Logf("Success")
+	}
+}
+
+func TestUpdatePreset(t *testing.T) {
+	params := platform.UpdatePresetXQuery{
+		PresetName: "p1",
+		Archived:   true,
+	}
+	_, err := pixelbin.Assets.UpdatePreset(params)
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	} else {
+		t.Logf("Success")
+	}
+}
+
+func TestGetPreset(t *testing.T) {
+	params := platform.GetPresetXQuery{
+		PresetName: "p1",
+	}
+	_, err := pixelbin.Assets.GetPreset(params)
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	} else {
+		t.Logf("Success")
+	}
+
+}
+
+func TestDeletePreset(t *testing.T) {
+	params := platform.DeletePresetXQuery{
+		PresetName: "p1",
+	}
+	_, err := pixelbin.Assets.DeletePreset(params)
+
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	} else {
+		t.Logf("Success")
+	}
+}
+
+func TestGetDefaultAssetForPlayground(t *testing.T) {
+	params := platform.GetDefaultAssetForPlaygroundXQuery{}
+	_, err := pixelbin.Assets.GetDefaultAssetForPlayground(params)
 	if err != nil {
 		t.Errorf("Failed ! got err %v", err)
 	} else {
