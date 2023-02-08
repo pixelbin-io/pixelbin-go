@@ -1,4 +1,4 @@
-module github.com/pixelbin-dev/pixelbin-go
+module github.com/pixelbin-dev/pixelbin-go/v2
 
 go 1.18
 

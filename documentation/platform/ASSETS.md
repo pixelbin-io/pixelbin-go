@@ -41,7 +41,7 @@ Asset Uploader Service
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -128,7 +128,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -215,7 +215,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -297,7 +297,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -406,7 +406,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -477,7 +477,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -548,7 +548,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -631,7 +631,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -702,7 +702,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -773,7 +773,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -847,7 +847,7 @@ Success - List of all created folders
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -924,7 +924,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -992,7 +992,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -1064,7 +1064,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -1144,7 +1144,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -1211,7 +1211,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -1278,7 +1278,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -1343,7 +1343,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -1420,7 +1420,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -1498,7 +1498,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -1573,7 +1573,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -1646,7 +1646,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -1719,7 +1719,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -1787,7 +1787,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -1884,7 +1884,7 @@ Success
 import (
     "fmt"
     "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+    "github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
