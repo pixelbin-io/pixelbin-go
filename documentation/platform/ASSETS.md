@@ -20,7 +20,6 @@ Asset Uploader Service
 -   [DeleteFolder](#deletefolder)
 -   [GetFolderAncestors](#getfolderancestors)
 -   [AddCredentials](#addcredentials)
--   [GetCredentials](#getcredentials)
 -   [UpdateCredentials](#updatecredentials)
 -   [DeleteCredentials](#deletecredentials)
 -   [AddPreset](#addpreset)
@@ -1204,76 +1203,6 @@ Success
 
 </details>
 
-### GetCredentials
-
-**Summary**: Get all credentials for an organization.
-
-```golang
-import (
-    "fmt"
-    "os"
-    "github.com/pixelbin-dev/pixelbin-go/sdk/platform"
-)
-
-func main() {
-    // create pixelbin config object
-    config := platform.NewPixelbinConfig(
-        "API_TOKEN",
-        "https://api.pixelbin.io",
-    )
-    // set oauthclient
-    config.SetOAuthClient()
-
-    // create pixelbin client object
-    pixelbin := platform.NewPixelbinClient(config)
-
-    // Parameters for FileUpload function
-    params := platform.GetCredentialsXQuery{
-    }
-    result, err := pixelbin.Assets.GetCredentials(params)
-
-    if err != nil {
-        fmt.Println(err)
-    }
-    // use result
-    fmt.Println(result)
-}
-
-```
-
-Get all credentials for an organization.
-
-_Returned Response:_
-
-[GetCredentialsResponse](#getcredentialsresponse)
-
-Success
-
-<details>
-<summary><i>&nbsp; Example:</i></summary>
-
-```json
-{
-    "credentials": {
-        "awsRek": {
-            "_id": "123ee789-7ae8-4336-b9bd-e4f33c049002",
-            "createdAt": "2022-10-04T09:52:09.545Z",
-            "updatedAt": "2022-10-04T09:52:09.545Z",
-            "isActive": true,
-            "orgId": 23,
-            "pluginId": "awsRek",
-            "credentials": {
-                "region": "ap-south-1",
-                "accessKeyId": "123456789ABC",
-                "secretAccessKey": "DUMMY1234567890"
-            }
-        }
-    }
-}
-```
-
-</details>
-
 ### UpdateCredentials
 
 **Summary**: Update credentials of a transformation module.
@@ -2255,12 +2184,6 @@ Success
 | Properties | Type        | Nullable | Description |
 | ---------- | ----------- | -------- | ----------- |
 | pluginId   | interface{} | no       |             |
-
-#### GetCredentialsResponse
-
-| Properties  | Type        | Nullable | Description |
-| ----------- | ----------- | -------- | ----------- |
-| credentials | interface{} | yes      |             |
 
 #### AddCredentialsRequest
 

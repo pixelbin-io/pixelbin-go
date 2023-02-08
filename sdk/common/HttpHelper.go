@@ -3,6 +3,7 @@ package common
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -114,8 +115,19 @@ func CreateMultiPartFormPayload(file *os.File, reqBodyMap map[string]interface{}
 	contentType := writer.FormDataContentType()
 	for key, val := range reqBodyMap {
 		if key != "file" {
-			if b, ok := val.(string); ok {
-				_ = writer.WriteField(key, b)
+			// we only process primitives & array of primitives (as supported by multipart-formdata)
+			if iter, ok := val.([]interface{}); ok {
+				for _, ele := range iter {
+					err = writer.WriteField(key, fmt.Sprintf("%v", ele))
+					if err != nil {
+						return nil, "", err
+					}
+				}
+			} else {
+				err = writer.WriteField(key, fmt.Sprintf("%v", val))
+				if err != nil {
+					return nil, "", err
+				}
 			}
 		}
 	}

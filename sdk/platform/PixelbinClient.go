@@ -880,44 +880,6 @@ func (c *Assets) AddCredentials(
 
 }
 
-type GetCredentialsXQuery struct {
-}
-
-/*
-summary: Get all credentials for an organization.
-
-description: Get all credentials for an organization.
-
-params: GetCredentialsXQuery
-*/
-func (c *Assets) GetCredentials(
-	p GetCredentialsXQuery,
-) (map[string]interface{}, error) {
-
-	queryParams := make(map[string]string)
-
-	apiClient := &APIClient{
-		Conf:        c.config,
-		Method:      "get",
-		Url:         "/service/platform/assets/v1.0/credentials",
-		Query:       queryParams,
-		Body:        nil,
-		ContentType: "",
-	}
-
-	response, err := apiClient.Execute()
-	if err != nil {
-		return nil, err
-	}
-	resp := map[string]interface{}{}
-	err = json.Unmarshal(response, &resp)
-	if err != nil {
-		return nil, common.NewFDKError(err.Error())
-	}
-	return resp, nil
-
-}
-
 type UpdateCredentialsXQuery struct {
 	PluginId    string                 `json:"pluginId,omitempty"`
 	Credentials map[string]interface{} `json:"credentials,omitempty"`
