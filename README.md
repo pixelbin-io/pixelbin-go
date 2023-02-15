@@ -9,7 +9,7 @@ Getting started with Pixelbin Backend SDK for Golang
 ### Installation
 
 ```
-go get -u "github.com/pixelbin-dev/pixelbin-go"
+go get -u "github.com/pixelbin-dev/pixelbin-go/v2"
 ```
 
 ---
