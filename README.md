@@ -9,7 +9,7 @@ Getting started with Pixelbin Backend SDK for Golang
 ### Installation
 
 ```
-go get -u "github.com/pixelbin-dev/pixelbin-go"
+go get -u "github.com/pixelbin-dev/pixelbin-go/v2"
 ```
 
 ---
@@ -22,7 +22,7 @@ go get -u "github.com/pixelbin-dev/pixelbin-go"
 import (
 	"fmt"
 	"os"
-	"github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -82,7 +82,7 @@ Example:
 import (
 	"fmt"
 	"os"
-	"github.com/pixelbin-dev/pixelbin-go/sdk/utils/url"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/url"
 )
 
 func main() {
@@ -141,7 +141,7 @@ Converts the extracted url obj to a Pixelbin url.
 import (
 	"fmt"
 	"os"
-	"github.com/pixelbin-dev/pixelbin-go/sdk/utils/url"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/url"
 )
 func main() {
     obj := map[string]interface{}{

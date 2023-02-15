@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pixelbin-dev/pixelbin-go/sdk/platform"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -19,7 +19,7 @@ func main() {
 	// create pixelbin client object
 	pixelbin := platform.NewPixelbinClient(config)
 
-	file, _ := os.Open("/home/rohit/deidara/1.jpeg")
+	file, _ := os.Open("./tests/1.jpeg")
 
 	// Parameters for FileUpload function
 	params := platform.FileUploadXQuery{
