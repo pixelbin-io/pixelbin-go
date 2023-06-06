@@ -30,7 +30,7 @@ func (c *APIClient) Execute() ([]byte, error) {
 	if c.ContentType == "multipart/form-data" {
 		data = nil
 	}
-	queryString := common.MapToURLEncodedString(c.Query)
+	queryString := common.MapToUrlString(c.Query)
 
 	model := common.NewSignatureModel(c.Conf.Domain, c.Method, c.Url, queryString, headers, data, []string{"Authorization", "Content-Type"})
 
