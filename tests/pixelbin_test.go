@@ -488,6 +488,24 @@ func TestGetDefaultAssetForPlayground(t *testing.T) {
 	}
 }
 
+func TestGetTransformationContext(t *testing.T) {
+	params := platform.GetTransformationContextXQuery{
+		// provide link of your image
+		URL: "/v2/restless-cloud-a0494f/erase.bg()/sample1.webp",
+	}
+	resp, err := pixelbin.Transformation.GetTransformationContext(params)
+
+	if err != nil {
+		t.Errorf("Failed! Got error: %v", err)
+	} else {
+		t.Logf("Success!")
+	}
+
+	if _, ok := resp["context"]; !ok {
+		t.Errorf("Failed! Expected 'context' key in response, but it was not found.")
+	}
+}
+
 func TestMain(m *testing.M) {
 
 	flag.StringVar(&domain, "domain", settings["domain"], "Domain Address")

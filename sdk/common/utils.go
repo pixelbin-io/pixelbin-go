@@ -36,6 +36,17 @@ func MapToURLEncodedString(valMap map[string]string) (encodedData string) {
 	return
 }
 
+func MapToUrlString(valMap map[string]string) string {
+	var urlStr string
+	for k, v := range valMap {
+		urlStr += fmt.Sprintf("%s=%s&", k, v)
+	}
+	if len(urlStr) > 0 {
+		urlStr = urlStr[:len(urlStr)-1] // remove trailing &
+	}
+	return urlStr
+}
+
 type SignatureModel struct {
 	domain         string
 	method         string

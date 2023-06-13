@@ -308,3 +308,8 @@ type AppOrgDetails struct {
 type ErrorSchema struct {
 	Message string `json:"message"`
 }
+
+// GetTransformationContextSuccessResponse used by Transformation
+type GetTransformationContextSuccessResponse struct {
+	Context map[string]interface{} `json:"context"`
+}
