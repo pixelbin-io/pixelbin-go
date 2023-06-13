@@ -9,17 +9,19 @@ import (
 
 // PixelbinClient holds all the PixelbinConfig object properties
 type PixelbinClient struct {
-	Config       *PixelbinConfig
-	Assets       *Assets
-	Organization *Organization
+	Config         *PixelbinConfig
+	Assets         *Assets
+	Organization   *Organization
+	Transformation *Transformation
 }
 
 // NewPixelbinClient returns pixelbin service instances
 func NewPixelbinClient(config *PixelbinConfig) *PixelbinClient {
 	return &PixelbinClient{
-		Config:       config,
-		Assets:       NewAssets(config),
-		Organization: NewOrganization(config),
+		Config:         config,
+		Assets:         NewAssets(config),
+		Organization:   NewOrganization(config),
+		Transformation: NewTransformation(config),
 	}
 }
 
@@ -1333,6 +1335,59 @@ func (c *Organization) GetAppOrgDetails(
 		Conf:        c.config,
 		Method:      "get",
 		Url:         "/service/platform/organization/v1.0/apps/info",
+		Query:       queryParams,
+		Body:        nil,
+		ContentType: "",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
+// Transformation holds Transformation object properties
+type Transformation struct {
+	config *PixelbinConfig
+}
+
+// NewTransformation returns new Transformation instance
+func NewTransformation(config *PixelbinConfig) *Transformation {
+	return &Transformation{config: config}
+}
+
+type GetTransformationContextXQuery struct {
+	URL string `json:"url,omitempty"`
+}
+
+/*
+summary: Get transformation context
+
+description: Get transformation context
+
+params: GetTransformationContextXQuery
+*/
+func (c *Transformation) GetTransformationContext(
+	p GetTransformationContextXQuery,
+) (map[string]interface{}, error) {
+
+	queryParams := make(map[string]string)
+
+	if p.URL != "" {
+		queryParams["url"] = fmt.Sprintf("%v", p.URL)
+	}
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "get",
+		Url:         "/service/platform/transformation/context",
 		Query:       queryParams,
 		Body:        nil,
 		ContentType: "",
