@@ -447,7 +447,7 @@ type UpdateFileXQuery struct {
 	FileId   string                 `json:"fileId,omitempty"`
 	Name     string                 `json:"name,omitempty"`
 	Path     string                 `json:"path,omitempty"`
-	Access   string                 `json:"access,omitempty"`
+	Access   AccessEnum             `json:"access,omitempty"`
 	IsActive bool                   `json:"isActive,omitempty"`
 	Tags     []string               `json:"tags,omitempty"`
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
@@ -469,7 +469,7 @@ func (c *Assets) UpdateFile(
 
 		Path string `json:"path,omitempty"`
 
-		Access string `json:"access,omitempty"`
+		Access AccessEnum `json:"access,omitempty"`
 
 		IsActive bool `json:"isActive,omitempty"`
 

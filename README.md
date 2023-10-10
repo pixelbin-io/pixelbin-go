@@ -58,23 +58,37 @@ Pixelbin provides url utilities to construct and deconstruct Pixelbin urls.
 
 ### UrlToObj
 
-Deconstruct a pixelbin url
+Deconstruct a pixelbin URL
 
-| parameter            | description          | example                                                                                               |
-| -------------------- | -------------------- | ----------------------------------------------------------------------------------------------------- |
-| pixelbinUrl (string) | A valid pixelbin url | `https://cdn.pixelbin.io/v2/your-cloud-name/z-slug/t.resize(h:100,w:200)~t.flip()/path/to/image.jpeg` |
+| Parameter              | Description                                                | Example                                                                                               |
+| ---------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `pixelbinUrl` (string) | A valid pixelbin URL                                       | `https://cdn.pixelbin.io/v2/your-cloud-name/z-slug/t.resize(h:100,w:200)~t.flip()/path/to/image.jpeg` |
+| `opts` (variadic)      | Functional options for configuring the function (optional) | See `UrlToObjOption` below                                                                            |
+
+**`UrlToObjOption`**:
+
+`UrlToObjOption` is a functional option for configuring the `UrlToObj` function. You can use it to customize the behavior of the function by setting different options. See the table below for a list of available options.
+
+**Options**:
+
+| Option             | Description                               | Default Value |
+| ------------------ | ----------------------------------------- | ------------- |
+| `WithCustomDomain` | Set `IsCustomDomain` to `true` or `false` | `false`       |
 
 **Returns**:
 
-| property                | description                            | example                    |
-| ----------------------- | -------------------------------------- | -------------------------- |
-| cloudName (string)      | The cloudname extracted from the url   | `your-cloud-name`          |
-| zone (string)           | 6 character zone slug                  | `z-slug`                   |
-| version (string)        | cdn api version                        | `v2`                       |
-| transformations (array) | Extracted transformations from the url |                            |
-| options (object)        | Optional query params                  |                            |
-| filePath                | Path to the file on Pixelbin storage   | `/path/to/image.jpeg`      |
-| baseUrl (string)        | Base url                               | `https://cdn.pixelbin.io/` |
+| Property                  | Description                                          | Example                               |
+| ------------------------- | ---------------------------------------------------- | ------------------------------------- |
+| `baseURL` (string)        | Base path of the URL                                 | `https://cdn.pixelbin.io`             |
+| `filePath` (string)       | Path to the file on Pixelbin storage                 | `/path/to/image.jpeg`                 |
+| `version` (string)        | Version of the URL                                   | `v2`                                  |
+| `cloudName` (string)      | Cloud name from the URL                              | `your-cloud-name`                     |
+| `transformations` (array) | A list of transformation objects                     | `[{ "plugin": "t", "name": "flip" }]` |
+| `zone` (string)           | Zone slug from the URL                               | `z-slug`                              |
+| `pattern` (string)        | Transformation pattern extracted from the URL        | `t.resize(h:100,w:200)~t.flip()`      |
+| `worker` (boolean)        | Indicates if the URL is a URL Translation Worker URL | `False`                               |
+| `workerPath` (string)     | Input path to a URL Translation Worker               | `resize:w200,h400/folder/image.jpeg`  |
+| `options` (Object)        | Query parameters added, such as "dpr" and "f_auto"   | `{ dpr: 2.5, f_auto: True}`           |
 
 Example:
 
@@ -123,19 +137,96 @@ func main() {
 // }
 ```
 
+Usage with custom domain
+
+```golang
+import (
+	"fmt"
+	"os"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/url"
+)
+
+func main() {
+    customDomainUrl :=
+        "https://xyz.designify.media/v2/z-slug/t.resize(h:100,w:200)~t.flip()/path/to/image.jpeg"
+    obj := url.UrlToObj(pixelbinUrl, WithCustomDomain(true))
+}
+// obj
+// {
+//     "zone": "z-slug",
+//     "version": "v2",
+//     "transformations": [
+//         {
+//             "plugin": "t",
+//             "name": "resize",
+//             "values": [
+//                 {
+//                     "key": "h",
+//                     "value": "100"
+//                 },
+//                 {
+//                     "key": "w",
+//                     "value": "200"
+//                 }
+//             ]
+//         },
+//         {
+//             "plugin": "t",
+//             "name": "flip",
+//         }
+//     ],
+//     "filePath": "path/to/image.jpeg",
+//     "baseUrl": "https://xyz.designify.media",
+//     "wrkr": False,
+//     "workerPath": "",
+//     "options": {}
+// }
+```
+
+Usage with URL Translation Worker
+
+```golang
+import (
+	"fmt"
+	"os"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/url"
+)
+
+func main() {
+    workerUrl :=
+        "https://cdn.pixelbin.io/v2/your-cloud-name/z-slug/wrkr/resize:h100,w:200/folder/image.jpeg";
+    obj := url.UrlToObj(pixelbinUrl)
+}
+// obj
+// {
+//     "cloudName": "your-cloud-name",
+//     "zone": "z-slug",
+//     "version": "v2",
+//     "transformations": [],
+//     "filePath": "",
+//     "worker": True,
+//     "workerPath": "resize:h100,w:200/folder/image.jpeg",
+//     "baseUrl": "https://cdn.pixelbin.io"
+//     "options": {}
+// }
+```
+
 ### ObjToUrl
 
 Converts the extracted url obj to a Pixelbin url.
 
-| property                | description                            | example                    |
-| ----------------------- | -------------------------------------- | -------------------------- |
-| cloudName (string)      | The cloudname extracted from the url   | `your-cloud-name`          |
-| zone (string)           | 6 character zone slug                  | `z-slug`                   |
-| version (string)        | cdn api version                        | `v2`                       |
-| options (object)        | Optional query params                  |                            |
-| transformations (array) | Extracted transformations from the url |                            |
-| filePath                | Path to the file on Pixelbin storage   | `/path/to/image.jpeg`      |
-| baseUrl (string)        | Base url                               | `https://cdn.pixelbin.io/` |
+| Property                   | Description                                          | Example                               |
+| -------------------------- | ---------------------------------------------------- | ------------------------------------- |
+| `cloudName` (string)       | The cloudname extracted from the URL                 | `your-cloud-name`                     |
+| `zone` (string)            | 6 character zone slug                                | `z-slug`                              |
+| `version` (string)         | CDN API version                                      | `v2`                                  |
+| `transformations` (array)  | Extracted transformations from the URL               | `[{ "plugin": "t", "name": "flip" }]` |
+| `filePath` (string)        | Path to the file on Pixelbin storage                 | `/path/to/image.jpeg`                 |
+| `baseUrl` (string)         | Base URL                                             | `https://cdn.pixelbin.io/`            |
+| `isCustomDomain` (boolean) | Indicates if the URL is for a custom domain          | `False`                               |
+| `worker` (boolean)         | Indicates if the URL is a URL Translation Worker URL | `False`                               |
+| `workerPath` (string)      | Input path to a URL Translation Worker               | `resize:w200,h400/folder/image.jpeg`  |
+| `options` (Object)         | Query parameters added, such as "dpr" and "f_auto"   | `{ "dpr": 2.0, "f_auto": True }`      |
 
 ```golang
 import (
@@ -148,39 +239,95 @@ func main() {
         cloudName: "your-cloud-name",
         zone: "z-slug",
         version: "v2",
-        options: {
-            dpr: "2.0",
-            f_auto: "true",
+        options:  []map[string]interface{}{
+            dpr: 2.5,
+            f_auto: true,
         },
-        transformations: [
+        transformations: []map[string]interface{}{
             {
                 plugin: "t",
-                name: "resize",
-                values: [
-                    {
-                        key: "h",
-                        value: "100",
-                    },
-                    {
-                        key: "w",
-                        value: "200",
-                    },
-                ],
+                name: "flop",
             },
             {
                 plugin: "t",
                 name: "flip",
             },
-        ],
+        },
         filePath: "path/to/image.jpeg",
         baseUrl: "https://cdn.pixelbin.io",
     }
     urlstring := url.ObjToUrl(obj) // obj is as shown above
 }
 // urlstring
-// https://cdn.pixelbin.io/v2/your-cloud-name/z-slug/t.resize(h:100,w:200)~t.flip()/path/to/image.jpeg?dpr=2.0&f_auto=true
+// https://cdn.pixelbin.io/v2/your-cloud-name/z-slug/t.flop()~t.flip()/path/to/image.jpeg?dpr=2.5&f_auto=true
 ```
+
+Usage with custom domain
+
+```golang
+import (
+	"fmt"
+	"os"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/url"
+)
+func main() {
+    obj := map[string]interface{}{
+        cloudName: "your-cloud-name",
+        zone: "z-slug",
+        version: "v2",
+        options:  []map[string]interface{}{
+            dpr: 2.5,
+            f_auto: true,
+        },
+        transformations: []map[string]interface{}{
+            {
+                plugin: "t",
+                name: "flop",
+            },
+            {
+                plugin: "t",
+                name: "flip",
+            },
+        },
+        filePath: "path/to/image.jpeg",
+        baseUrl: "https://xyz.designify.media",
+        isCustomDomain: True,
+    }
+    urlstring := url.ObjToUrl(obj) // obj is as shown above
+}
+// urlstring
+// https://xyz.designify.media/v2/z-slug/t.flop()~t.flip()/path/to/image.jpeg?dpr=2.5&f_auto=true
+```
+
+Usage with URL Translation Worker
+
+```golang
+import (
+	"fmt"
+	"os"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/url"
+)
+func main() {
+    obj := map[string]interface{}{
+        cloudName: "your-cloud-name",
+        zone: "z-slug",
+        version: "v2",
+        options: []map[string]interface{}{
+            dpr: 2.5,
+            f_auto: true,
+        },
+        transformations: []map[string]interface{}{},
+        worker: true,
+        workerPath: "resize:h100,w:200/folder/image.jpeg",
+        filePath: "path/to/image.jpeg",
+        baseUrl: "https://cdn.pixelbin.io",
+    }
+    urlstring := url.ObjToUrl(obj) // obj is as shown above
+}
+// urlstring
+// https://cdn.pixelbin.io/v2/your-cloud-name/z-slug/wrkr/resize:h100,w:200/folder/image.jpeg
 
 ## Documentation
 
 -   [API docs](documentation/platform/README.md)
+```
