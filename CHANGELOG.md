@@ -1,3 +1,7 @@
+# 2.3.0
+
+-   Added support for generating signed Custom Domain and PixelBin CDN urls
+
 # 2.2.0
 
 -   Added worker and Custom Domain url support to `UrlToObj` & `ObjToUrl`
