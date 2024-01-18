@@ -386,4 +386,3 @@ func main() {
 ## Documentation
 
 -   [API docs](documentation/platform/README.md)
-```
