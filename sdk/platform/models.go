@@ -12,14 +12,14 @@ type folderItem struct {
 
 // exploreItem used by Assets
 type exploreItem struct {
-	ID     string  `json:"_id"`
-	Name   string  `json:"name"`
-	Type   string  `json:"type"`
-	Path   string  `json:"path"`
-	FileId string  `json:"fileId"`
-	Format string  `json:"format"`
-	Size   float64 `json:"size"`
-	Access string  `json:"access"`
+	ID     string     `json:"_id"`
+	Name   string     `json:"name"`
+	Type   string     `json:"type"`
+	Path   string     `json:"path"`
+	FileId string     `json:"fileId"`
+	Format string     `json:"format"`
+	Size   float64    `json:"size"`
+	Access AccessEnum `json:"access"`
 }
 
 // page used by Assets
@@ -82,7 +82,7 @@ type UploadResponse struct {
 	Path      string                 `json:"path"`
 	Format    string                 `json:"format"`
 	Size      float64                `json:"size"`
-	Access    string                 `json:"access"`
+	Access    AccessEnum             `json:"access"`
 	Tags      []string               `json:"tags"`
 	Metadata  map[string]interface{} `json:"metadata"`
 	URL       string                 `json:"url"`
@@ -120,7 +120,7 @@ type FilesResponse struct {
 	FileId    string                 `json:"fileId"`
 	Format    string                 `json:"format"`
 	Size      float64                `json:"size"`
-	Access    string                 `json:"access"`
+	Access    AccessEnum             `json:"access"`
 	IsActive  bool                   `json:"isActive"`
 	Tags      []string               `json:"tags"`
 	Metadata  map[string]interface{} `json:"metadata"`
@@ -132,7 +132,7 @@ type FilesResponse struct {
 type UpdateFileRequest struct {
 	Name     string                 `json:"name"`
 	Path     string                 `json:"path"`
-	Access   string                 `json:"access"`
+	Access   AccessEnum             `json:"access"`
 	IsActive bool                   `json:"isActive"`
 	Tags     []string               `json:"tags"`
 	Metadata map[string]interface{} `json:"metadata"`

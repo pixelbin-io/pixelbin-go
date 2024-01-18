@@ -11,6 +11,27 @@ import (
 	"strings"
 )
 
+type UrlRegex struct {
+	WithZone          string
+	WithoutZone       string
+	WithWorkerAndZone string
+	WithWorker        string
+}
+
+var pixelBinDomainRegex = UrlRegex{
+	WithZone:          "^/([a-zA-Z0-9_-]*)/([a-zA-Z0-9_-]{6})/(.+)/(.*)$",
+	WithoutZone:       "^/([a-zA-Z0-9_-]*)/(.+)/(.*)",
+	WithWorkerAndZone: "^/([a-zA-Z0-9_-]*)/([a-zA-Z0-9_-]{6})/wrkr/(.*)$",
+	WithWorker:        "^/([a-zA-Z0-9_-]*)/wrkr/(.*)$",
+}
+
+var customDomainRegex = UrlRegex{
+	WithoutZone:       "^/(.+)/(.*)",
+	WithZone:          "^/([a-zA-Z0-9_-]{6})/(.+)/(.*)$",
+	WithWorkerAndZone: "^/([a-zA-Z0-9_-]{6})/wrkr/(.*)$",
+	WithWorker:        "^/wrkr/(.*)$",
+}
+
 var OPERTATION_SEPARATOR string = "~"
 var PARAMETER_SEPARATOR string = ","
 var VERSION2_REGEX string = "^v[1-2]$"
@@ -19,15 +40,37 @@ var URL_WITHOUT_ZONE string = "/([a-zA-Z0-9_-]*)/(.+)/(.*)"
 var ZONE_SLUG string = "([a-zA-Z0-9_-]{6})"
 var BASE_URL string = "https://cdn.pixelbin.io"
 
-func UrlToObj(url string) (map[string]interface{}, error) {
-	return getObjFromUrl(url)
+// UrlToObjOption is a functional option for configuring the UrlToObj function.
+type UrlToObjOption func(*urlToObjConfig)
+
+// WithCustomDomain sets the IsCustomDomain field in the configuration.
+func WithCustomDomain(IsCustomDomain bool) UrlToObjOption {
+	return func(config *urlToObjConfig) {
+		config.IsCustomDomain = IsCustomDomain
+	}
+}
+
+type urlToObjConfig struct {
+	IsCustomDomain bool
+}
+
+func UrlToObj(url string, opts ...UrlToObjOption) (map[string]interface{}, error) {
+	config := urlToObjConfig{
+		IsCustomDomain: false,
+	}
+
+	for _, opt := range opts {
+		opt(&config)
+	}
+
+	return getObjFromUrl(url, config)
 }
 
 func ObjToUrl(obj map[string]interface{}) (string, error) {
 	return getUrlFromObj(obj)
 }
 
-func getUrlParts(pixelbinUrl string) (map[string]interface{}, error) {
+func getUrlParts(pixelbinUrl string, config urlToObjConfig) (map[string]interface{}, error) {
 	parseUrl, err := url.Parse(pixelbinUrl)
 	if err != nil {
 		return nil, err
@@ -39,39 +82,94 @@ func getUrlParts(pixelbinUrl string) (map[string]interface{}, error) {
 			"dpr":    parseUrl.Query().Get("dpr"),
 			"f_auto": parseUrl.Query().Get("f_auto"),
 		},
-		"version": "v1",
+		"version":    "v1",
+		"cloudName":  nil,
+		"worker":     false,
+		"workerPath": "",
 	}
 	parts := strings.Split(parseUrl.Path, "/")
-	if ok, _ := regexp.MatchString(VERSION2_REGEX, parts[1]); ok {
-		urlDetails["version"] = parts[1]
-		parts = append(parts[:1], parts[2:]...)
-	}
-	if len(parts[1]) < 3 {
-		return nil, errors.New("invalid pixelbin url. Please make sure the url is correct")
-	}
 
-	if ok, _ := regexp.MatchString(URL_WITH_ZONE, strings.Join(parts, "/")); ok {
-		urlDetails["cloudName"] = parts[1]
-		parts = append(parts[:1], parts[2:]...)
-		urlDetails["zoneSlug"] = parts[1]
-		parts = append(parts[:1], parts[2:]...)
-		urlDetails["pattern"] = parts[1]
-		parts = append(parts[:1], parts[2:]...)
-		urlDetails["filePath"] = strings.Join(parts[1:], "/")
-	} else if ok, _ := regexp.MatchString(URL_WITHOUT_ZONE, strings.Join(parts, "/")); ok {
-		urlDetails["cloudName"] = parts[1]
-		parts = append(parts[:1], parts[2:]...)
-		urlDetails["pattern"] = parts[1]
-		parts = append(parts[:1], parts[2:]...)
-		urlDetails["filePath"] = strings.Join(parts[1:], "/")
+	if config.IsCustomDomain {
+		if ok, _ := regexp.MatchString(VERSION2_REGEX, parts[1]); ok {
+			urlDetails["version"] = parts[1]
+			parts = append(parts[:1], parts[2:]...)
+		} else {
+			return nil, errors.New("Invalid pixelbin url. Please make sure the url is correct.")
+		}
+
+		if ok, _ := regexp.MatchString(customDomainRegex.WithWorkerAndZone, strings.Join(parts, "/")); ok {
+			urlDetails["zoneSlug"] = parts[1]
+			parts = append(parts[:1], parts[2:]...)
+			urlDetails["worker"] = true
+			urlDetails["workerPath"] = strings.Join(parts[2:], "/")
+			urlDetails["pattern"] = ""
+			urlDetails["filePath"] = ""
+		} else if ok, _ := regexp.MatchString(customDomainRegex.WithWorker, strings.Join(parts, "/")); ok {
+			urlDetails["worker"] = true
+			urlDetails["workerPath"] = strings.Join(parts[2:], "/")
+			urlDetails["pattern"] = ""
+			urlDetails["filePath"] = ""
+		} else if ok, _ := regexp.MatchString(customDomainRegex.WithZone, strings.Join(parts, "/")); ok {
+			urlDetails["zoneSlug"] = parts[1]
+			parts = append(parts[:1], parts[2:]...)
+			urlDetails["pattern"] = parts[1]
+			parts = append(parts[:1], parts[2:]...)
+			urlDetails["filePath"] = strings.Join(parts[1:], "/")
+		} else if ok, _ := regexp.MatchString(customDomainRegex.WithoutZone, strings.Join(parts, "/")); ok {
+			urlDetails["pattern"] = parts[1]
+			parts = append(parts[:1], parts[2:]...)
+			urlDetails["filePath"] = strings.Join(parts[1:], "/")
+		} else {
+			return nil, errors.New("invalid pixelbin url. Please make sure the url is correct")
+		}
 	} else {
-		return nil, errors.New("invalid pixelbin url. Please make sure the url is correct")
+		if ok, _ := regexp.MatchString(VERSION2_REGEX, parts[1]); ok {
+			urlDetails["version"] = parts[1]
+			parts = append(parts[:1], parts[2:]...)
+		}
+		if len(parts[1]) < 3 {
+			return nil, errors.New("invalid pixelbin url. Please make sure the url is correct")
+		}
+
+		if ok, _ := regexp.MatchString(pixelBinDomainRegex.WithWorkerAndZone, strings.Join(parts, "/")); ok {
+			urlDetails["cloudName"] = parts[1]
+			parts = append(parts[:1], parts[2:]...)
+			urlDetails["zoneSlug"] = parts[1]
+			parts = append(parts[:1], parts[2:]...)
+			urlDetails["worker"] = true
+			urlDetails["workerPath"] = strings.Join(parts[2:], "/")
+			urlDetails["pattern"] = ""
+			urlDetails["filePath"] = ""
+		} else if ok, _ := regexp.MatchString(pixelBinDomainRegex.WithWorker, strings.Join(parts, "/")); ok {
+			urlDetails["cloudName"] = parts[1]
+			parts = append(parts[:1], parts[2:]...)
+			urlDetails["worker"] = true
+			urlDetails["workerPath"] = strings.Join(parts[2:], "/")
+			urlDetails["pattern"] = ""
+			urlDetails["filePath"] = ""
+		} else if ok, _ := regexp.MatchString(pixelBinDomainRegex.WithZone, strings.Join(parts, "/")); ok {
+			urlDetails["cloudName"] = parts[1]
+			parts = append(parts[:1], parts[2:]...)
+			urlDetails["zoneSlug"] = parts[1]
+			parts = append(parts[:1], parts[2:]...)
+			urlDetails["pattern"] = parts[1]
+			parts = append(parts[:1], parts[2:]...)
+			urlDetails["filePath"] = strings.Join(parts[1:], "/")
+		} else if ok, _ := regexp.MatchString(pixelBinDomainRegex.WithoutZone, strings.Join(parts, "/")); ok {
+			urlDetails["cloudName"] = parts[1]
+			parts = append(parts[:1], parts[2:]...)
+			urlDetails["pattern"] = parts[1]
+			parts = append(parts[:1], parts[2:]...)
+			urlDetails["filePath"] = strings.Join(parts[1:], "/")
+		} else {
+			return nil, errors.New("invalid pixelbin url. Please make sure the url is correct")
+		}
 	}
 	return urlDetails, nil
 }
 
-func getPartsFromUrl(url string) (map[string]interface{}, error) {
-	parts, err := getUrlParts(url)
+func getPartsFromUrl(url string, config urlToObjConfig) (map[string]interface{}, error) {
+	parts, err := getUrlParts(url, config)
 	if err != nil {
 		return nil, err
 	}
@@ -174,7 +272,7 @@ func FlattenSlice(slice []interface{}) []string {
 }
 
 func getTransformationDetailsFromPattern(pattern string, url string) []map[string]interface{} {
-	if pattern == "original" {
+	if pattern == "original" || pattern == "" {
 		return []map[string]interface{}{}
 	}
 	dSplit := strings.Split(pattern, OPERTATION_SEPARATOR)
@@ -194,7 +292,7 @@ func getTransformationDetailsFromPattern(pattern string, url string) []map[strin
 
 		if len(values) > 0 {
 			keys := make([]string, 0)
-			for k, _ := range values {
+			for k := range values {
 				keys = append(keys, k)
 			}
 			sort.Strings(keys)
@@ -222,8 +320,8 @@ func getTransformationDetailsFromPattern(pattern string, url string) []map[strin
 	return arr
 }
 
-func getObjFromUrl(url string) (map[string]interface{}, error) {
-	parts, err := getPartsFromUrl(url)
+func getObjFromUrl(url string, config urlToObjConfig) (map[string]interface{}, error) {
+	parts, err := getPartsFromUrl(url, config)
 	if err != nil {
 		return nil, errors.New("error Processing url. Please check the url is correct" + err.Error())
 	}
@@ -275,22 +373,42 @@ func getUrlFromObj(obj map[string]interface{}) (string, error) {
 	if _, ok := obj["baseUrl"]; !ok {
 		obj["baseUrl"] = BASE_URL
 	}
-	if _, ok := obj["cloudName"]; !ok {
+	if obj["isCustomDomain"] == nil && obj["cloudName"] == nil {
 		return "", errors.New("key cloudName should be defined")
 	}
-	if _, ok := obj["filePath"]; !ok {
-		return "", errors.New("key filePath should be defined")
+	if obj["isCustomDomain"] != nil && obj["isCustomDomain"].(bool) && obj["cloudName"] != nil {
+		return "", errors.New("key cloudName is not valid for custom domains")
 	}
 
-	patternValue, err := getPatternFromTransformations(obj["transformations"])
-	if err != nil {
-		return "", err
-	}
-	if patternValue != "" {
-		obj["pattern"] = patternValue
+	var isWorker bool
+	
+	if obj["worker"] != nil && obj["worker"].(bool) {
+		isWorker = true
 	} else {
-		obj["pattern"] = "original"
+		isWorker = false
 	}
+
+	if !isWorker && obj["filePath"] == nil {
+		return "", errors.New("key filePath should be defined")
+	}
+	if isWorker && obj["workerPath"] == nil {
+		return "", errors.New("key workerPath should be defined")
+	}
+
+	if isWorker {
+		obj["pattern"] = "wrkr"
+	} else {
+		patternValue, err := getPatternFromTransformations(obj["transformations"])
+		if err != nil {
+			return "", err
+		}
+		if patternValue != "" {
+			obj["pattern"] = patternValue
+		} else {
+			obj["pattern"] = "original"
+		}
+	}
+
 	_, versionOk := obj["version"]
 	if !versionOk {
 		obj["version"] = "v2"
@@ -300,24 +418,20 @@ func getUrlFromObj(obj map[string]interface{}) (string, error) {
 			obj["version"] = "v2"
 		}
 	}
-	v, zoneOk := obj["zone"]
-	if !zoneOk {
-		obj["zone"] = ""
-	} else {
-		if v == nil {
-			obj["zone"] = ""
-		} else {
-			match, _ := regexp.MatchString(ZONE_SLUG, obj["zone"].(string))
-			if !match {
-				obj["version"] = "v2"
-			}
-		}
+	if _, ok := obj["zone"]; !ok || obj["zone"] == nil || !regexp.MustCompile(ZONE_SLUG).MatchString(obj["zone"].(string)) {
+		obj["zone"] = nil
 	}
 
-	urlKeySorted := []string{"baseUrl", "version", "cloudName", "zoneSlug", "pattern", "filePath"}
+	urlKeySorted := []string{"baseUrl", "version", "cloudName", "zone", "pattern"}
+	if isWorker {
+		urlKeySorted = append(urlKeySorted, "workerPath")
+	} else {
+		urlKeySorted = append(urlKeySorted, "filePath")
+	}
+
 	urlArr := []string{}
-	for _, v2 := range urlKeySorted {
-		if val, ok := obj[v2]; ok {
+	for _, key := range urlKeySorted {
+		if val, ok := obj[key]; ok && val != nil {
 			urlArr = append(urlArr, val.(string))
 		}
 	}
@@ -325,16 +439,14 @@ func getUrlFromObj(obj map[string]interface{}) (string, error) {
 	if _, ok := obj["options"]; ok {
 		queryParams := obj["options"].(map[string]interface{})
 		if len(queryParams) > 0 {
-			dpr, _ := queryParams["dpr"]
-			f_auto := queryParams["f_auto"]
-			if dpr != "" {
-				_, err := validateDPR(dpr.(float64))
+			if dpr, ok := queryParams["dpr"];  ok && dpr != "" {
+				dpr, err := parseDPR(dpr)
 				if err != nil {
 					return "", err
 				}
-				queryArr = append(queryArr, "dpr="+fmt.Sprint(dpr.(float64)))
+				queryArr = append(queryArr, "dpr="+fmt.Sprint(dpr))
 			}
-			if f_auto != "" {
+			if f_auto, ok := queryParams["f_auto"]; ok && f_auto != "" {
 				_, err := validateFAuto(f_auto.(bool))
 				if err != nil {
 					return "", err
@@ -348,6 +460,32 @@ func getUrlFromObj(obj map[string]interface{}) (string, error) {
 		urlStr += "?" + strings.Join(queryArr, "&")
 	}
 	return urlStr, nil
+}
+
+func parseDPR(dpr interface{}) (string, error) {
+	switch dprValue := dpr.(type) {
+    case string:
+		if dprValue == "auto" {
+			return dpr.(string), nil
+		}
+	case int:
+		if dprValue < 1 || dprValue > 5 {
+			return "", errors.New("DPR value should be between 0.1 to 5.0")
+		}
+
+		return strconv.Itoa(int(dprValue)), nil
+    case float64:
+		if dprValue < 0.1 || dprValue > 5.0 {
+			return "", errors.New("DPR value should be between 0.1 to 5.0")
+		}
+	
+		return strconv.FormatFloat(dprValue, 'f', 1, 64), nil
+	
+    default:
+        return "", errors.New("Invalid DPR value")
+    }
+
+	return "", errors.New("Invalid DPR value")
 }
 
 func validateDPR(dpr float64) (map[string]interface{}, error) {

@@ -589,7 +589,7 @@ func main() {
 | FileId   | string                 | yes      | Combination of `path` and `name`                                |
 | Name     | string                 | no       | Name of the file                                                |
 | Path     | string                 | no       | path of containing folder.                                      |
-| Access   | string                 | no       | Access level of asset, can be either `public-read` or `private` |
+| Access   | AccessEnum             | no       | Access level of asset, can be either `public-read` or `private` |
 | IsActive | bool                   | no       | Whether the file is active                                      |
 | Tags     | []string               | no       | Tags associated with the file                                   |
 | Metadata | map[string]interface{} | no       | Metadata associated with the file                               |
@@ -738,7 +738,7 @@ func main() {
 
 _Returned Response:_
 
-[FilesResponse](#filesresponse)
+[[]FilesResponse](#[filesresponse)
 
 Success
 
@@ -746,21 +746,23 @@ Success
 <summary><i>&nbsp; Example:</i></summary>
 
 ```json
-{
-    "_id": "dummy-uuid",
-    "name": "asset",
-    "path": "dir",
-    "fileId": "dir/asset",
-    "format": "jpeg",
-    "size": 1000,
-    "access": "private",
-    "isActive": true,
-    "tags": ["tag1", "tag2"],
-    "metadata": {
-        "key": "value"
-    },
-    "url": "https://domain.com/filename.jpeg"
-}
+[
+    {
+        "_id": "dummy-uuid",
+        "name": "asset",
+        "path": "dir",
+        "fileId": "dir/asset",
+        "format": "jpeg",
+        "size": 1000,
+        "access": "private",
+        "isActive": true,
+        "tags": ["tag1", "tag2"],
+        "metadata": {
+            "key": "value"
+        },
+        "url": "https://domain.com/filename.jpeg"
+    }
+]
 ```
 
 </details>
@@ -1955,16 +1957,16 @@ Success
 
 #### exploreItem
 
-| Properties | Type    | Nullable | Description                                                     |
-| ---------- | ------- | -------- | --------------------------------------------------------------- |
-| \_id       | string  | yes      | id of the exploreItem                                           |
-| name       | string  | yes      | name of the item                                                |
-| type       | string  | yes      | Type of item whether `file` or `folder`                         |
-| path       | string  | yes      | Path of containing folder                                       |
-| fileId     | string  | no       | Combination of `path` and `name` of file                        |
-| format     | string  | no       | Format of the file                                              |
-| size       | float64 | no       | Size of the file in bytes                                       |
-| access     | string  | no       | Access level of asset, can be either `public-read` or `private` |
+| Properties | Type       | Nullable | Description                                                     |
+| ---------- | ---------- | -------- | --------------------------------------------------------------- |
+| \_id       | string     | yes      | id of the exploreItem                                           |
+| name       | string     | yes      | name of the item                                                |
+| type       | string     | yes      | Type of item whether `file` or `folder`                         |
+| path       | string     | yes      | Path of containing folder                                       |
+| fileId     | string     | no       | Combination of `path` and `name` of file                        |
+| format     | string     | no       | Format of the file                                              |
+| size       | float64    | no       | Size of the file in bytes                                       |
+| access     | AccessEnum | no       | Access level of asset, can be either `public-read` or `private` |
 
 #### page
 
@@ -2034,7 +2036,7 @@ Success
 | path       | string                 | yes      | path to the parent folder                                   |
 | format     | string                 | yes      | format of the file                                          |
 | size       | float64                | yes      | size of file in bytes                                       |
-| access     | string                 | yes      | Access level of asset, can be either public-read or private |
+| access     | AccessEnum             | yes      | Access level of asset, can be either public-read or private |
 | tags       | []string               | no       | tags associated with the item                               |
 | metadata   | map[string]interface{} | no       | metadata associated with the item                           |
 | url        | string                 | no       | url of the item                                             |
@@ -2078,7 +2080,7 @@ Success
 | fileId     | string                 | yes      | Combination of `path` and `name` of file                       |
 | format     | string                 | yes      | format of the file                                             |
 | size       | float64                | yes      | size of the file in bytes                                      |
-| access     | string                 | yes      | Access level of file, can be either `public-read` or `private` |
+| access     | AccessEnum             | yes      | Access level of file, can be either `public-read` or `private` |
 | isActive   | bool                   | yes      | Whether the file is active                                     |
 | tags       | []string               | no       | Tags associated with the file                                  |
 | metadata   | map[string]interface{} | no       | Metadata associated with the file                              |
@@ -2091,7 +2093,7 @@ Success
 | ---------- | ---------------------- | -------- | --------------------------------------------------------------- |
 | name       | string                 | no       | Name of the file                                                |
 | path       | string                 | no       | path of containing folder.                                      |
-| access     | string                 | no       | Access level of asset, can be either `public-read` or `private` |
+| access     | AccessEnum             | no       | Access level of asset, can be either `public-read` or `private` |
 | isActive   | bool                   | no       | Whether the file is active                                      |
 | tags       | []string               | no       | Tags associated with the file                                   |
 | metadata   | map[string]interface{} | no       | Metadata associated with the file                               |
