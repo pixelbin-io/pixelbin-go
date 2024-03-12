@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pixelbin-io/pixelbin-go/v2/sdk/platform"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {

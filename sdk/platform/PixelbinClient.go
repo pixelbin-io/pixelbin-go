@@ -3,8 +3,9 @@ package platform
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/pixelbin-io/pixelbin-go/v2/sdk/common"
 	"os"
+
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/common"
 )
 
 // PixelbinClient holds all the PixelbinConfig object properties

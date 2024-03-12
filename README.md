@@ -9,7 +9,7 @@ Getting started with Pixelbin Backend SDK for Golang
 ### Installation
 
 ```
-go get -u "github.com/pixelbin-io/pixelbin-go/v2"
+go get -u "github.com/pixelbin-dev/pixelbin-go/v2"
 ```
 
 ---
@@ -22,7 +22,7 @@ go get -u "github.com/pixelbin-io/pixelbin-go/v2"
 import (
 	"fmt"
 	"os"
-	"github.com/pixelbin-io/pixelbin-go/v2/sdk/platform"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
 )
 
 func main() {
@@ -71,7 +71,7 @@ Example:
 import (
 	"fmt"
 	"os"
-	"github.com/pixelbin-io/pixelbin-go/v2/sdk/utils/security"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/security"
 )
 
 func main() {
@@ -92,7 +92,7 @@ Usage with custom domain url
 import (
 	"fmt"
 	"os"
-	"github.com/pixelbin-io/pixelbin-go/v2/sdk/utils/security"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/security"
 )
 
 func main() {
@@ -151,7 +151,7 @@ Example:
 import (
 	"fmt"
 	"os"
-	"github.com/pixelbin-io/pixelbin-go/v2/sdk/utils/url"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/url"
 )
 
 func main() {
@@ -198,7 +198,7 @@ Usage with custom domain
 import (
 	"fmt"
 	"os"
-	"github.com/pixelbin-io/pixelbin-go/v2/sdk/utils/url"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/url"
 )
 
 func main() {
@@ -244,7 +244,7 @@ Usage with URL Translation Worker
 import (
 	"fmt"
 	"os"
-	"github.com/pixelbin-io/pixelbin-go/v2/sdk/utils/url"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/url"
 )
 
 func main() {
@@ -287,7 +287,7 @@ Converts the extracted url obj to a Pixelbin url.
 import (
 	"fmt"
 	"os"
-	"github.com/pixelbin-io/pixelbin-go/v2/sdk/utils/url"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/url"
 )
 func main() {
     obj := map[string]interface{}{
@@ -323,7 +323,7 @@ Usage with custom domain
 import (
 	"fmt"
 	"os"
-	"github.com/pixelbin-io/pixelbin-go/v2/sdk/utils/url"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/url"
 )
 func main() {
     obj := map[string]interface{}{
@@ -360,7 +360,7 @@ Usage with URL Translation Worker
 import (
 	"fmt"
 	"os"
-	"github.com/pixelbin-io/pixelbin-go/v2/sdk/utils/url"
+	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/url"
 )
 func main() {
     obj := map[string]interface{}{
