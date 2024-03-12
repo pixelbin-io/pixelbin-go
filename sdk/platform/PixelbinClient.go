@@ -35,62 +35,32 @@ func NewAssets(config *PixelbinConfig) *Assets {
 	return &Assets{config: config}
 }
 
-type FileUploadXQuery struct {
-	File             *os.File               `json:"file,omitempty"`
-	Path             string                 `json:"path,omitempty"`
-	Name             string                 `json:"name,omitempty"`
-	Access           AccessEnum             `json:"access,omitempty"`
-	Tags             []string               `json:"tags,omitempty"`
-	Metadata         map[string]interface{} `json:"metadata,omitempty"`
-	Overwrite        bool                   `json:"overwrite,omitempty"`
-	FilenameOverride bool                   `json:"filenameOverride,omitempty"`
+type AddCredentialsXQuery struct {
+	Credentials map[string]interface{} `json:"credentials,omitempty"`
+	PluginId    string                 `json:"pluginId,omitempty"`
 }
 
 /*
-summary: Upload File
+summary: Add credentials for a transformation module.
 
-description: Upload File to Pixelbin
+description: Add a transformation modules's credentials for an organization.
 
-params: FileUploadXQuery
+params: AddCredentialsXQuery
 */
-func (c *Assets) FileUpload(
-	p FileUploadXQuery,
+func (c *Assets) AddCredentials(
+	p AddCredentialsXQuery,
 ) (map[string]interface{}, error) {
 
 	type body struct {
-		File *os.File `json:"file,omitempty"`
+		Credentials map[string]interface{} `json:"credentials,omitempty"`
 
-		Path string `json:"path,omitempty"`
-
-		Name string `json:"name,omitempty"`
-
-		Access AccessEnum `json:"access,omitempty"`
-
-		Tags []string `json:"tags,omitempty"`
-
-		Metadata map[string]interface{} `json:"metadata,omitempty"`
-
-		Overwrite bool `json:"overwrite,omitempty"`
-
-		FilenameOverride bool `json:"filenameOverride,omitempty"`
+		PluginId string `json:"pluginId,omitempty"`
 	}
 	bodydata := &body{
 
-		File: p.File,
+		Credentials: p.Credentials,
 
-		Path: p.Path,
-
-		Name: p.Name,
-
-		Access: p.Access,
-
-		Tags: p.Tags,
-
-		Metadata: p.Metadata,
-
-		Overwrite: p.Overwrite,
-
-		FilenameOverride: p.FilenameOverride,
+		PluginId: p.PluginId,
 	}
 
 	queryParams := make(map[string]string)
@@ -98,89 +68,7 @@ func (c *Assets) FileUpload(
 	apiClient := &APIClient{
 		Conf:        c.config,
 		Method:      "post",
-		Url:         "/service/platform/assets/v1.0/upload/direct",
-		Query:       queryParams,
-		Body:        bodydata,
-		ContentType: "multipart/form-data",
-	}
-
-	response, err := apiClient.Execute()
-	if err != nil {
-		return nil, err
-	}
-	resp := map[string]interface{}{}
-	err = json.Unmarshal(response, &resp)
-	if err != nil {
-		return nil, common.NewFDKError(err.Error())
-	}
-	return resp, nil
-
-}
-
-type UrlUploadXQuery struct {
-	URL              string                 `json:"url,omitempty"`
-	Path             string                 `json:"path,omitempty"`
-	Name             string                 `json:"name,omitempty"`
-	Access           AccessEnum             `json:"access,omitempty"`
-	Tags             []string               `json:"tags,omitempty"`
-	Metadata         map[string]interface{} `json:"metadata,omitempty"`
-	Overwrite        bool                   `json:"overwrite,omitempty"`
-	FilenameOverride bool                   `json:"filenameOverride,omitempty"`
-}
-
-/*
-summary: Upload Asset with url
-
-description: Upload Asset with url
-
-params: UrlUploadXQuery
-*/
-func (c *Assets) UrlUpload(
-	p UrlUploadXQuery,
-) (map[string]interface{}, error) {
-
-	type body struct {
-		URL string `json:"url,omitempty"`
-
-		Path string `json:"path,omitempty"`
-
-		Name string `json:"name,omitempty"`
-
-		Access AccessEnum `json:"access,omitempty"`
-
-		Tags []string `json:"tags,omitempty"`
-
-		Metadata map[string]interface{} `json:"metadata,omitempty"`
-
-		Overwrite bool `json:"overwrite,omitempty"`
-
-		FilenameOverride bool `json:"filenameOverride,omitempty"`
-	}
-	bodydata := &body{
-
-		URL: p.URL,
-
-		Path: p.Path,
-
-		Name: p.Name,
-
-		Access: p.Access,
-
-		Tags: p.Tags,
-
-		Metadata: p.Metadata,
-
-		Overwrite: p.Overwrite,
-
-		FilenameOverride: p.FilenameOverride,
-	}
-
-	queryParams := make(map[string]string)
-
-	apiClient := &APIClient{
-		Conf:        c.config,
-		Method:      "post",
-		Url:         "/service/platform/assets/v1.0/upload/url",
+		Url:         "/service/platform/assets/v1.0/credentials",
 		Query:       queryParams,
 		Body:        bodydata,
 		ContentType: "application/json",
@@ -199,71 +87,36 @@ func (c *Assets) UrlUpload(
 
 }
 
-type CreateSignedUrlXQuery struct {
-	Name             string                 `json:"name,omitempty"`
-	Path             string                 `json:"path,omitempty"`
-	Format           string                 `json:"format,omitempty"`
-	Access           AccessEnum             `json:"access,omitempty"`
-	Tags             []string               `json:"tags,omitempty"`
-	Metadata         map[string]interface{} `json:"metadata,omitempty"`
-	Overwrite        bool                   `json:"overwrite,omitempty"`
-	FilenameOverride bool                   `json:"filenameOverride,omitempty"`
+type UpdateCredentialsXQuery struct {
+	PluginId    string                 `json:"pluginId,omitempty"`
+	Credentials map[string]interface{} `json:"credentials,omitempty"`
 }
 
 /*
-summary: S3 Signed URL upload
+summary: Update credentials of a transformation module.
 
-description: For the given asset details, a S3 signed URL will be generated,
-which can be then used to upload your asset.
+description: Update credentials of a transformation module, for an organization.
 
-params: CreateSignedUrlXQuery
+params: UpdateCredentialsXQuery
 */
-func (c *Assets) CreateSignedUrl(
-	p CreateSignedUrlXQuery,
+func (c *Assets) UpdateCredentials(
+	p UpdateCredentialsXQuery,
 ) (map[string]interface{}, error) {
 
 	type body struct {
-		Name string `json:"name,omitempty"`
-
-		Path string `json:"path,omitempty"`
-
-		Format string `json:"format,omitempty"`
-
-		Access AccessEnum `json:"access,omitempty"`
-
-		Tags []string `json:"tags,omitempty"`
-
-		Metadata map[string]interface{} `json:"metadata,omitempty"`
-
-		Overwrite bool `json:"overwrite,omitempty"`
-
-		FilenameOverride bool `json:"filenameOverride,omitempty"`
+		Credentials map[string]interface{} `json:"credentials,omitempty"`
 	}
 	bodydata := &body{
 
-		Name: p.Name,
-
-		Path: p.Path,
-
-		Format: p.Format,
-
-		Access: p.Access,
-
-		Tags: p.Tags,
-
-		Metadata: p.Metadata,
-
-		Overwrite: p.Overwrite,
-
-		FilenameOverride: p.FilenameOverride,
+		Credentials: p.Credentials,
 	}
 
 	queryParams := make(map[string]string)
 
 	apiClient := &APIClient{
 		Conf:        c.config,
-		Method:      "post",
-		Url:         "/service/platform/assets/v1.0/upload/signed-url",
+		Method:      "patch",
+		Url:         fmt.Sprintf("/service/platform/assets/v1.0/credentials/%s", p.PluginId),
 		Query:       queryParams,
 		Body:        bodydata,
 		ContentType: "application/json",
@@ -282,71 +135,27 @@ func (c *Assets) CreateSignedUrl(
 
 }
 
-type ListFilesXQuery struct {
-	Name        string        `json:"name,omitempty"`
-	Path        string        `json:"path,omitempty"`
-	Format      string        `json:"format,omitempty"`
-	Tags        []interface{} `json:"tags,omitempty"`
-	OnlyFiles   bool          `json:"onlyFiles,omitempty"`
-	OnlyFolders bool          `json:"onlyFolders,omitempty"`
-	PageNo      float64       `json:"pageNo,omitempty"`
-	PageSize    float64       `json:"pageSize,omitempty"`
-	Sort        string        `json:"sort,omitempty"`
+type DeleteCredentialsXQuery struct {
+	PluginId string `json:"pluginId,omitempty"`
 }
 
 /*
-summary: List and search files and folders.
+summary: Delete credentials of a transformation module.
 
-description: List all files and folders in root folder. Search for files if name is provided. If path is provided, search in the specified path.
+description: Delete credentials of a transformation module, for an organization.
 
-params: ListFilesXQuery
+params: DeleteCredentialsXQuery
 */
-func (c *Assets) ListFiles(
-	p ListFilesXQuery,
+func (c *Assets) DeleteCredentials(
+	p DeleteCredentialsXQuery,
 ) (map[string]interface{}, error) {
 
 	queryParams := make(map[string]string)
 
-	if p.Name != "" {
-		queryParams["name"] = fmt.Sprintf("%v", p.Name)
-	}
-
-	if p.Path != "" {
-		queryParams["path"] = fmt.Sprintf("%v", p.Path)
-	}
-
-	if p.Format != "" {
-		queryParams["format"] = fmt.Sprintf("%v", p.Format)
-	}
-
-	if p.Tags != nil {
-		queryParams["tags"] = fmt.Sprintf("%v", p.Tags)
-	}
-
-	if p.OnlyFiles != false {
-		queryParams["onlyFiles"] = fmt.Sprintf("%v", p.OnlyFiles)
-	}
-
-	if p.OnlyFolders != false {
-		queryParams["onlyFolders"] = fmt.Sprintf("%v", p.OnlyFolders)
-	}
-
-	if p.PageNo != 0 {
-		queryParams["pageNo"] = fmt.Sprintf("%v", p.PageNo)
-	}
-
-	if p.PageSize != 0 {
-		queryParams["pageSize"] = fmt.Sprintf("%v", p.PageSize)
-	}
-
-	if p.Sort != "" {
-		queryParams["sort"] = fmt.Sprintf("%v", p.Sort)
-	}
-
 	apiClient := &APIClient{
 		Conf:        c.config,
-		Method:      "get",
-		Url:         "/service/platform/assets/v1.0/listFiles",
+		Method:      "delete",
+		Url:         fmt.Sprintf("/service/platform/assets/v1.0/credentials/%s", p.PluginId),
 		Query:       queryParams,
 		Body:        nil,
 		ContentType: "",
@@ -830,43 +639,74 @@ func (c *Assets) GetFolderAncestors(
 
 }
 
-type AddCredentialsXQuery struct {
-	Credentials map[string]interface{} `json:"credentials,omitempty"`
-	PluginId    string                 `json:"pluginId,omitempty"`
+type ListFilesXQuery struct {
+	Name        string        `json:"name,omitempty"`
+	Path        string        `json:"path,omitempty"`
+	Format      string        `json:"format,omitempty"`
+	Tags        []interface{} `json:"tags,omitempty"`
+	OnlyFiles   bool          `json:"onlyFiles,omitempty"`
+	OnlyFolders bool          `json:"onlyFolders,omitempty"`
+	PageNo      float64       `json:"pageNo,omitempty"`
+	PageSize    float64       `json:"pageSize,omitempty"`
+	Sort        string        `json:"sort,omitempty"`
 }
 
 /*
-summary: Add credentials for a transformation module.
+summary: List and search files and folders.
 
-description: Add a transformation modules's credentials for an organization.
+description: List all files and folders in root folder. Search for files if name is provided. If path is provided, search in the specified path.
 
-params: AddCredentialsXQuery
+params: ListFilesXQuery
 */
-func (c *Assets) AddCredentials(
-	p AddCredentialsXQuery,
+func (c *Assets) ListFiles(
+	p ListFilesXQuery,
 ) (map[string]interface{}, error) {
-
-	type body struct {
-		Credentials map[string]interface{} `json:"credentials,omitempty"`
-
-		PluginId string `json:"pluginId,omitempty"`
-	}
-	bodydata := &body{
-
-		Credentials: p.Credentials,
-
-		PluginId: p.PluginId,
-	}
 
 	queryParams := make(map[string]string)
 
+	if p.Name != "" {
+		queryParams["name"] = fmt.Sprintf("%v", p.Name)
+	}
+
+	if p.Path != "" {
+		queryParams["path"] = fmt.Sprintf("%v", p.Path)
+	}
+
+	if p.Format != "" {
+		queryParams["format"] = fmt.Sprintf("%v", p.Format)
+	}
+
+	if p.Tags != nil {
+		queryParams["tags"] = fmt.Sprintf("%v", p.Tags)
+	}
+
+	if p.OnlyFiles != false {
+		queryParams["onlyFiles"] = fmt.Sprintf("%v", p.OnlyFiles)
+	}
+
+	if p.OnlyFolders != false {
+		queryParams["onlyFolders"] = fmt.Sprintf("%v", p.OnlyFolders)
+	}
+
+	if p.PageNo != 0 {
+		queryParams["pageNo"] = fmt.Sprintf("%v", p.PageNo)
+	}
+
+	if p.PageSize != 0 {
+		queryParams["pageSize"] = fmt.Sprintf("%v", p.PageSize)
+	}
+
+	if p.Sort != "" {
+		queryParams["sort"] = fmt.Sprintf("%v", p.Sort)
+	}
+
 	apiClient := &APIClient{
 		Conf:        c.config,
-		Method:      "post",
-		Url:         "/service/platform/assets/v1.0/credentials",
+		Method:      "get",
+		Url:         "/service/platform/assets/v1.0/listFiles",
 		Query:       queryParams,
-		Body:        bodydata,
-		ContentType: "application/json",
+		Body:        nil,
+		ContentType: "",
 	}
 
 	response, err := apiClient.Execute()
@@ -882,39 +722,29 @@ func (c *Assets) AddCredentials(
 
 }
 
-type UpdateCredentialsXQuery struct {
-	PluginId    string                 `json:"pluginId,omitempty"`
-	Credentials map[string]interface{} `json:"credentials,omitempty"`
+type GetDefaultAssetForPlaygroundXQuery struct {
 }
 
 /*
-summary: Update credentials of a transformation module.
+summary: Get default asset for playground
 
-description: Update credentials of a transformation module, for an organization.
+description: Get default asset for playground
 
-params: UpdateCredentialsXQuery
+params: GetDefaultAssetForPlaygroundXQuery
 */
-func (c *Assets) UpdateCredentials(
-	p UpdateCredentialsXQuery,
+func (c *Assets) GetDefaultAssetForPlayground(
+	p GetDefaultAssetForPlaygroundXQuery,
 ) (map[string]interface{}, error) {
-
-	type body struct {
-		Credentials map[string]interface{} `json:"credentials,omitempty"`
-	}
-	bodydata := &body{
-
-		Credentials: p.Credentials,
-	}
 
 	queryParams := make(map[string]string)
 
 	apiClient := &APIClient{
 		Conf:        c.config,
-		Method:      "patch",
-		Url:         fmt.Sprintf("/service/platform/assets/v1.0/credentials/%s", p.PluginId),
+		Method:      "get",
+		Url:         "/service/platform/assets/v1.0/playground/default",
 		Query:       queryParams,
-		Body:        bodydata,
-		ContentType: "application/json",
+		Body:        nil,
+		ContentType: "",
 	}
 
 	response, err := apiClient.Execute()
@@ -930,27 +760,65 @@ func (c *Assets) UpdateCredentials(
 
 }
 
-type DeleteCredentialsXQuery struct {
-	PluginId string `json:"pluginId,omitempty"`
+type GetModulesXQuery struct {
 }
 
 /*
-summary: Delete credentials of a transformation module.
+summary: Get all transformation modules
 
-description: Delete credentials of a transformation module, for an organization.
+description: Get all transformation modules.
 
-params: DeleteCredentialsXQuery
+params: GetModulesXQuery
 */
-func (c *Assets) DeleteCredentials(
-	p DeleteCredentialsXQuery,
+func (c *Assets) GetModules(
+	p GetModulesXQuery,
 ) (map[string]interface{}, error) {
 
 	queryParams := make(map[string]string)
 
 	apiClient := &APIClient{
 		Conf:        c.config,
-		Method:      "delete",
-		Url:         fmt.Sprintf("/service/platform/assets/v1.0/credentials/%s", p.PluginId),
+		Method:      "get",
+		Url:         "/service/platform/assets/v1.0/playground/plugins",
+		Query:       queryParams,
+		Body:        nil,
+		ContentType: "",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
+type GetModuleXQuery struct {
+	Identifier string `json:"identifier,omitempty"`
+}
+
+/*
+summary: Get Transformation Module by module identifier
+
+description: Get Transformation Module by module identifier
+
+params: GetModuleXQuery
+*/
+func (c *Assets) GetModule(
+	p GetModuleXQuery,
+) (map[string]interface{}, error) {
+
+	queryParams := make(map[string]string)
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "get",
+		Url:         fmt.Sprintf("/service/platform/assets/v1.0/playground/plugins/%s", p.Identifier),
 		Query:       queryParams,
 		Body:        nil,
 		ContentType: "",
@@ -1190,29 +1058,73 @@ func (c *Assets) GetPreset(
 
 }
 
-type GetDefaultAssetForPlaygroundXQuery struct {
+type FileUploadXQuery struct {
+	File             *os.File               `json:"file,omitempty"`
+	Path             string                 `json:"path,omitempty"`
+	Name             string                 `json:"name,omitempty"`
+	Access           AccessEnum             `json:"access,omitempty"`
+	Tags             []string               `json:"tags,omitempty"`
+	Metadata         map[string]interface{} `json:"metadata,omitempty"`
+	Overwrite        bool                   `json:"overwrite,omitempty"`
+	FilenameOverride bool                   `json:"filenameOverride,omitempty"`
 }
 
 /*
-summary: Get default asset for playground
+summary: Upload File
 
-description: Get default asset for playground
+description: Upload File to Pixelbin
 
-params: GetDefaultAssetForPlaygroundXQuery
+params: FileUploadXQuery
 */
-func (c *Assets) GetDefaultAssetForPlayground(
-	p GetDefaultAssetForPlaygroundXQuery,
+func (c *Assets) FileUpload(
+	p FileUploadXQuery,
 ) (map[string]interface{}, error) {
+
+	type body struct {
+		File *os.File `json:"file,omitempty"`
+
+		Path string `json:"path,omitempty"`
+
+		Name string `json:"name,omitempty"`
+
+		Access AccessEnum `json:"access,omitempty"`
+
+		Tags []string `json:"tags,omitempty"`
+
+		Metadata map[string]interface{} `json:"metadata,omitempty"`
+
+		Overwrite bool `json:"overwrite,omitempty"`
+
+		FilenameOverride bool `json:"filenameOverride,omitempty"`
+	}
+	bodydata := &body{
+
+		File: p.File,
+
+		Path: p.Path,
+
+		Name: p.Name,
+
+		Access: p.Access,
+
+		Tags: p.Tags,
+
+		Metadata: p.Metadata,
+
+		Overwrite: p.Overwrite,
+
+		FilenameOverride: p.FilenameOverride,
+	}
 
 	queryParams := make(map[string]string)
 
 	apiClient := &APIClient{
 		Conf:        c.config,
-		Method:      "get",
-		Url:         "/service/platform/assets/v1.0/playground/default",
+		Method:      "post",
+		Url:         "/service/platform/assets/v1.0/upload/direct",
 		Query:       queryParams,
-		Body:        nil,
-		ContentType: "",
+		Body:        bodydata,
+		ContentType: "multipart/form-data",
 	}
 
 	response, err := apiClient.Execute()
@@ -1228,29 +1140,73 @@ func (c *Assets) GetDefaultAssetForPlayground(
 
 }
 
-type GetModulesXQuery struct {
+type UrlUploadXQuery struct {
+	URL              string                 `json:"url,omitempty"`
+	Path             string                 `json:"path,omitempty"`
+	Name             string                 `json:"name,omitempty"`
+	Access           AccessEnum             `json:"access,omitempty"`
+	Tags             []string               `json:"tags,omitempty"`
+	Metadata         map[string]interface{} `json:"metadata,omitempty"`
+	Overwrite        bool                   `json:"overwrite,omitempty"`
+	FilenameOverride bool                   `json:"filenameOverride,omitempty"`
 }
 
 /*
-summary: Get all transformation modules
+summary: Upload Asset with url
 
-description: Get all transformation modules.
+description: Upload Asset with url
 
-params: GetModulesXQuery
+params: UrlUploadXQuery
 */
-func (c *Assets) GetModules(
-	p GetModulesXQuery,
+func (c *Assets) UrlUpload(
+	p UrlUploadXQuery,
 ) (map[string]interface{}, error) {
+
+	type body struct {
+		URL string `json:"url,omitempty"`
+
+		Path string `json:"path,omitempty"`
+
+		Name string `json:"name,omitempty"`
+
+		Access AccessEnum `json:"access,omitempty"`
+
+		Tags []string `json:"tags,omitempty"`
+
+		Metadata map[string]interface{} `json:"metadata,omitempty"`
+
+		Overwrite bool `json:"overwrite,omitempty"`
+
+		FilenameOverride bool `json:"filenameOverride,omitempty"`
+	}
+	bodydata := &body{
+
+		URL: p.URL,
+
+		Path: p.Path,
+
+		Name: p.Name,
+
+		Access: p.Access,
+
+		Tags: p.Tags,
+
+		Metadata: p.Metadata,
+
+		Overwrite: p.Overwrite,
+
+		FilenameOverride: p.FilenameOverride,
+	}
 
 	queryParams := make(map[string]string)
 
 	apiClient := &APIClient{
 		Conf:        c.config,
-		Method:      "get",
-		Url:         "/service/platform/assets/v1.0/playground/plugins",
+		Method:      "post",
+		Url:         "/service/platform/assets/v1.0/upload/url",
 		Query:       queryParams,
-		Body:        nil,
-		ContentType: "",
+		Body:        bodydata,
+		ContentType: "application/json",
 	}
 
 	response, err := apiClient.Execute()
@@ -1266,30 +1222,161 @@ func (c *Assets) GetModules(
 
 }
 
-type GetModuleXQuery struct {
-	Identifier string `json:"identifier,omitempty"`
+type CreateSignedUrlXQuery struct {
+	Name             string                 `json:"name,omitempty"`
+	Path             string                 `json:"path,omitempty"`
+	Format           string                 `json:"format,omitempty"`
+	Access           AccessEnum             `json:"access,omitempty"`
+	Tags             []string               `json:"tags,omitempty"`
+	Metadata         map[string]interface{} `json:"metadata,omitempty"`
+	Overwrite        bool                   `json:"overwrite,omitempty"`
+	FilenameOverride bool                   `json:"filenameOverride,omitempty"`
 }
 
 /*
-summary: Get Transformation Module by module identifier
+summary: S3 Signed URL upload
 
-description: Get Transformation Module by module identifier
+description: For the given asset details, a S3 signed URL will be generated,
+which can be then used to upload your asset.
 
-params: GetModuleXQuery
+params: CreateSignedUrlXQuery
 */
-func (c *Assets) GetModule(
-	p GetModuleXQuery,
+func (c *Assets) CreateSignedUrl(
+	p CreateSignedUrlXQuery,
 ) (map[string]interface{}, error) {
+
+	type body struct {
+		Name string `json:"name,omitempty"`
+
+		Path string `json:"path,omitempty"`
+
+		Format string `json:"format,omitempty"`
+
+		Access AccessEnum `json:"access,omitempty"`
+
+		Tags []string `json:"tags,omitempty"`
+
+		Metadata map[string]interface{} `json:"metadata,omitempty"`
+
+		Overwrite bool `json:"overwrite,omitempty"`
+
+		FilenameOverride bool `json:"filenameOverride,omitempty"`
+	}
+	bodydata := &body{
+
+		Name: p.Name,
+
+		Path: p.Path,
+
+		Format: p.Format,
+
+		Access: p.Access,
+
+		Tags: p.Tags,
+
+		Metadata: p.Metadata,
+
+		Overwrite: p.Overwrite,
+
+		FilenameOverride: p.FilenameOverride,
+	}
 
 	queryParams := make(map[string]string)
 
 	apiClient := &APIClient{
 		Conf:        c.config,
-		Method:      "get",
-		Url:         fmt.Sprintf("/service/platform/assets/v1.0/playground/plugins/%s", p.Identifier),
+		Method:      "post",
+		Url:         "/service/platform/assets/v1.0/upload/signed-url",
 		Query:       queryParams,
-		Body:        nil,
-		ContentType: "",
+		Body:        bodydata,
+		ContentType: "application/json",
+	}
+
+	response, err := apiClient.Execute()
+	if err != nil {
+		return nil, err
+	}
+	resp := map[string]interface{}{}
+	err = json.Unmarshal(response, &resp)
+	if err != nil {
+		return nil, common.NewFDKError(err.Error())
+	}
+	return resp, nil
+
+}
+
+type CreateSignedUrlV2XQuery struct {
+	Name             string                 `json:"name,omitempty"`
+	Path             string                 `json:"path,omitempty"`
+	Format           string                 `json:"format,omitempty"`
+	Access           AccessEnum             `json:"access,omitempty"`
+	Tags             []string               `json:"tags,omitempty"`
+	Metadata         map[string]interface{} `json:"metadata,omitempty"`
+	Overwrite        bool                   `json:"overwrite,omitempty"`
+	FilenameOverride bool                   `json:"filenameOverride,omitempty"`
+	Expiry           float64                `json:"expiry,omitempty"`
+}
+
+/*
+summary: Signed multipart upload
+
+description: For the given asset details, a presigned URL will be generated, which can be then used to upload your asset in chunks via multipart upload.
+
+params: CreateSignedUrlV2XQuery
+*/
+func (c *Assets) CreateSignedUrlV2(
+	p CreateSignedUrlV2XQuery,
+) (map[string]interface{}, error) {
+
+	type body struct {
+		Name string `json:"name,omitempty"`
+
+		Path string `json:"path,omitempty"`
+
+		Format string `json:"format,omitempty"`
+
+		Access AccessEnum `json:"access,omitempty"`
+
+		Tags []string `json:"tags,omitempty"`
+
+		Metadata map[string]interface{} `json:"metadata,omitempty"`
+
+		Overwrite bool `json:"overwrite,omitempty"`
+
+		FilenameOverride bool `json:"filenameOverride,omitempty"`
+
+		Expiry float64 `json:"expiry,omitempty"`
+	}
+	bodydata := &body{
+
+		Name: p.Name,
+
+		Path: p.Path,
+
+		Format: p.Format,
+
+		Access: p.Access,
+
+		Tags: p.Tags,
+
+		Metadata: p.Metadata,
+
+		Overwrite: p.Overwrite,
+
+		FilenameOverride: p.FilenameOverride,
+
+		Expiry: p.Expiry,
+	}
+
+	queryParams := make(map[string]string)
+
+	apiClient := &APIClient{
+		Conf:        c.config,
+		Method:      "post",
+		Url:         "/service/platform/assets/v2.0/upload/signed-url",
+		Query:       queryParams,
+		Body:        bodydata,
+		ContentType: "application/json",
 	}
 
 	response, err := apiClient.Execute()
