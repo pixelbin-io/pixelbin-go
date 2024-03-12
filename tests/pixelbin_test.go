@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/platform"
+	"github.com/pixelbin-io/pixelbin-go/v2/sdk/platform"
 )
 
 var settings = map[string]string{"domain": "https://api.testdomain.com", "apiSecret": "test-api-secret"}
@@ -240,6 +240,35 @@ func TestCreateSignedUrlCase2(t *testing.T) {
 		FilenameOverride: true,
 	}
 	_, err := pixelbin.Assets.CreateSignedUrl(params)
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	} else {
+		t.Logf("Success")
+	}
+}
+
+func TestCreateSignedUrlV2Case1(t *testing.T) {
+	params := platform.CreateSignedUrlV2XQuery{}
+	_, err := pixelbin.Assets.CreateSignedUrlV2(params)
+	if err != nil {
+		t.Errorf("Failed ! got err %v", err)
+	} else {
+		t.Logf("Success")
+	}
+}
+
+func TestCreateSignedUrlV2Case2(t *testing.T) {
+	params := platform.CreateSignedUrlV2XQuery{
+		Name:             "1",
+		Path:             settings["folderName"],
+		Format:           "jpeg",
+		Access:           "public-read",
+		Tags:             []string{"tag1", "tag2"},
+		Metadata:         map[string]interface{}{},
+		Overwrite:        false,
+		FilenameOverride: true,
+	}
+	_, err := pixelbin.Assets.CreateSignedUrlV2(params)
 	if err != nil {
 		t.Errorf("Failed ! got err %v", err)
 	} else {

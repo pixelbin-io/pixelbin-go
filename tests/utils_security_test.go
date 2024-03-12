@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/pixelbin-dev/pixelbin-go/v2/sdk/utils/security"
+	"github.com/pixelbin-io/pixelbin-go/v2/sdk/utils/security"
 )
 
 type signedUrlInput struct {
