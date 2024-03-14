@@ -381,8 +381,8 @@ func main() {
 }
 // urlstring
 // https://cdn.pixelbin.io/v2/your-cloud-name/z-slug/wrkr/resize:h100,w:200/folder/image.jpeg
-```
 
+```
 ## Documentation
 
 -   [API docs](documentation/platform/README.md)
