@@ -381,7 +381,7 @@ func getUrlFromObj(obj map[string]interface{}) (string, error) {
 	}
 
 	var isWorker bool
-	
+
 	if obj["worker"] != nil && obj["worker"].(bool) {
 		isWorker = true
 	} else {
@@ -439,7 +439,7 @@ func getUrlFromObj(obj map[string]interface{}) (string, error) {
 	if _, ok := obj["options"]; ok {
 		queryParams := obj["options"].(map[string]interface{})
 		if len(queryParams) > 0 {
-			if dpr, ok := queryParams["dpr"];  ok && dpr != "" {
+			if dpr, ok := queryParams["dpr"]; ok && dpr != "" {
 				dpr, err := parseDPR(dpr)
 				if err != nil {
 					return "", err
@@ -464,7 +464,7 @@ func getUrlFromObj(obj map[string]interface{}) (string, error) {
 
 func parseDPR(dpr interface{}) (string, error) {
 	switch dprValue := dpr.(type) {
-    case string:
+	case string:
 		if dprValue == "auto" {
 			return dpr.(string), nil
 		}
@@ -474,16 +474,16 @@ func parseDPR(dpr interface{}) (string, error) {
 		}
 
 		return strconv.Itoa(int(dprValue)), nil
-    case float64:
+	case float64:
 		if dprValue < 0.1 || dprValue > 5.0 {
 			return "", errors.New("DPR value should be between 0.1 to 5.0")
 		}
-	
+
 		return strconv.FormatFloat(dprValue, 'f', 1, 64), nil
-	
-    default:
-        return "", errors.New("Invalid DPR value")
-    }
+
+	default:
+		return "", errors.New("Invalid DPR value")
+	}
 
 	return "", errors.New("Invalid DPR value")
 }
