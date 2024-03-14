@@ -157,13 +157,6 @@ type UpdateFolderRequest struct {
 	IsActive bool `json:"isActive"`
 }
 
-// TransformationModulesResponse used by Assets
-type TransformationModulesResponse struct {
-	Delimiters Delimiter                               `json:"delimiters"`
-	Plugins    map[string]TransformationModuleResponse `json:"plugins"`
-	Presets    []interface{}                           `json:"presets"`
-}
-
 // DeleteMultipleFilesRequest used by Assets
 type DeleteMultipleFilesRequest struct {
 	Ids []string `json:"ids"`
@@ -173,16 +166,6 @@ type DeleteMultipleFilesRequest struct {
 type Delimiter struct {
 	OperationSeparator string `json:"operationSeparator"`
 	ParameterSeparator string `json:"parameterSeparator"`
-}
-
-// TransformationModuleResponse used by Assets
-type TransformationModuleResponse struct {
-	Identifier  string                 `json:"identifier"`
-	Name        string                 `json:"name"`
-	Description string                 `json:"description"`
-	Credentials map[string]interface{} `json:"credentials"`
-	Operations  []interface{}          `json:"operations"`
-	Enabled     bool                   `json:"enabled"`
 }
 
 // Credentials used by Assets
@@ -273,6 +256,47 @@ type UpdatePresetRequest struct {
 type GetPresetsResponse struct {
 	Items []AddPresetResponse `json:"items"`
 	Page  page                `json:"page"`
+}
+
+// TransformationModuleResponse used by Assets
+type TransformationModuleResponse struct {
+	Identifier  string                 `json:"identifier"`
+	Name        string                 `json:"name"`
+	Description string                 `json:"description"`
+	Credentials map[string]interface{} `json:"credentials"`
+	Operations  []interface{}          `json:"operations"`
+	Enabled     bool                   `json:"enabled"`
+}
+
+// TransformationModulesResponse used by Assets
+type TransformationModulesResponse struct {
+	Delimiters Delimiter                               `json:"delimiters"`
+	Plugins    map[string]TransformationModuleResponse `json:"plugins"`
+	Presets    []interface{}                           `json:"presets"`
+}
+
+// SignedUploadRequestV2 used by Assets
+type SignedUploadRequestV2 struct {
+	Name             string                 `json:"name"`
+	Path             string                 `json:"path"`
+	Format           string                 `json:"format"`
+	Access           AccessEnum             `json:"access"`
+	Tags             []string               `json:"tags"`
+	Metadata         map[string]interface{} `json:"metadata"`
+	Overwrite        bool                   `json:"overwrite"`
+	FilenameOverride bool                   `json:"filenameOverride"`
+	Expiry           float64                `json:"expiry"`
+}
+
+// SignedUploadV2Response used by Assets
+type SignedUploadV2Response struct {
+	PresignedUrl PresignedUrlV2 `json:"presignedUrl"`
+}
+
+// PresignedUrlV2 used by Assets
+type PresignedUrlV2 struct {
+	URL    string            `json:"url"`
+	Fields map[string]string `json:"fields"`
 }
 
 // OrganizationDetailSchema used by Organization
