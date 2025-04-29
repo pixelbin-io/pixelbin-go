@@ -2,6 +2,7 @@
 
 # Pixelbin API Documentaion
 
--   [Assets](ASSETS.md) - Asset Uploader Service
--   [Organization](ORGANIZATION.md) - Organization Service
--   [Transformation](TRANSFORMATION.md) - Image Transformation Service
+
+* [Assets](ASSETS.md) - Asset Uploader Service 
+* [Organization](ORGANIZATION.md) - Organization Service 
+* [Transformation](TRANSFORMATION.md) - Image Transformation Service 
